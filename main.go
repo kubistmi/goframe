@@ -35,7 +35,7 @@ func ParseQuery(query string) []Subquery {
 
 	subqueries := make([]Subquery, len(parts))
 
-	for _, val := range parts {
+	for ix, val := range parts {
 		var sub Subquery
 		sub.Operator = rOp.FindStringSubmatch(val)[0]
 		if len(sub.Operator) > 1 {
@@ -48,7 +48,7 @@ func ParseQuery(query string) []Subquery {
 
 		sub.LS = sides[0]
 		sub.RS = sides[1]
-		subqueries = append(subqueries, sub)
+		subqueries[ix] = sub
 	}
 	return subqueries
 }
@@ -101,30 +101,25 @@ func remove(s []float64, i int) []float64 {
 
 func (d Df) F(query string) Df {
 	sub := ParseQuery(query)
-	sub1 := sub[1] //!SHIT
 
-	var operations []func(r *Row, s Subquery, eq bool) bool
+	operations := make([]func(r *Row, s Subquery, eq bool) bool, len(sub))
+	equals := make([]bool, len(sub))
 
-	//for ix := range sub {
-	//	equal := strings.Contains(sub[ix].Operator, "=")
-	//	operations = append(operations, GetOperator(sub[ix], equal))
-	//}
-	equal := strings.Contains(sub1.Operator, "=")
-	operations = append(operations, GetOperator(sub1, equal))
-
+	for ix := range sub {
+		equals[ix] = strings.Contains(sub[ix].Operator, "=")
+		operations[ix] = GetOperator(sub[ix], equals[ix])
+	}
+	fmt.Println(sub)
 	var newD Df
 
 	for _, val := range d.Rows {
 		keep := true
-		//for col, f := range operations {
-		//	if !f(&val, sub[col], true) {
-		//		keep = false
-		//		break
-		//	}
-		//}
-		if !operations[0](&val, sub1, true) { //!SHIT
-			keep = false //!SHIT
-		} //!SHIT
+		for col, f := range operations {
+			if !f(&val, sub[col], equals[col]) {
+				keep = false
+				break
+			}
+		}
 		if keep {
 			newD.Rows = append(newD.Rows, val)
 		}
@@ -134,8 +129,8 @@ func (d Df) F(query string) Df {
 
 func main() {
 	m := map[string]int{
-		"abc":  1,
-		"efgh": 2,
+		"abc":  0,
+		"efgh": 1,
 	}
 
 	Row1 := Row{m, []float64{1.0, 2.0}}
@@ -144,5 +139,5 @@ func main() {
 
 	data := Df{[]Row{Row1, Row2, Row3}}
 
-	fmt.Println(data.F("abc<5.0"))
+	fmt.Println(data.F("abc < 5 & efgh < 5"))
 }
