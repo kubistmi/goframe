@@ -3,141 +3,172 @@ package main
 import (
 	"fmt"
 	"log"
-	"regexp"
-	"strconv"
-	"strings"
 )
 
-type Row struct {
-	Names map[string]int
-	Data  []float64
+// Vector ...
+type Vector interface {
+	Size() int
+	//Get[T vector_type]() []T
+	Get() interface{}
+	Loc(p int) Vector
 }
 
-type Df struct {
-	//Shape []int
-	Rows []Row
+// IntVector ...
+type IntVector struct {
+	obs   []int
+	name  string
+	index []int
+	size  int
+	err   error
 }
 
-type Subquery struct {
-	LS, RS, Operator string
+// Size ...
+func (v IntVector) Size() int {
+	return v.size
 }
 
-func (r *Row) L(col string) float64 {
-	ix := r.Names[col]
-	return r.Data[ix]
+// Get ...
+func (v IntVector) Get() interface{} {
+	return v.obs
 }
 
-func ParseQuery(query string) []Subquery {
-	query = strings.Replace(query, " ", "", -1)
-	parts := strings.Split(query, "&")
+// StrVector ...
+type StrVector struct {
+	obs     []string
+	name    string
+	index   []int
+	size    int
+	inverse map[string][]int
+	err     error
+}
 
-	rOp := regexp.MustCompile("(<={0,1}|>={0,1}|=)")
+// Size ...
+func (v StrVector) Size() int {
+	return v.size
+}
 
-	subqueries := make([]Subquery, len(parts))
+// Get ...
+func (v StrVector) Get() interface{} {
+	return v.obs
+}
 
-	for ix, val := range parts {
-		var sub Subquery
-		sub.Operator = rOp.FindStringSubmatch(val)[0]
-		if len(sub.Operator) > 1 {
-			log.Fatalf("Too many operators, expected one, got %s.\n", sub.Operator)
+// Loc ...
+func (v IntVector) Loc(p int) Vector {
+	if (p + 1) > v.size {
+		return IntVector{
+			err: fmt.Errorf("wrong position, vector size: %v, got %v", v.size, p),
 		}
-		sides := strings.Split(val, sub.Operator)
-		if len(sides) > 2 {
-			log.Fatalf("Too many parts of the query. The expectation are [left right] (2 sides around the operator), got %s.\n", sides)
-		}
-
-		sub.LS = sides[0]
-		sub.RS = sides[1]
-		subqueries[ix] = sub
 	}
-	return subqueries
+	return IntVector{
+		obs:  []int{v.obs[p]},
+		name: v.name,
+		size: 1,
+	}
 }
 
-func GetOperator(s Subquery, eq bool) func(r *Row, s Subquery, eq bool) bool {
-	operator := s.Operator
-	operator = strings.Replace(operator, "=", "", 1)
+// Loc ...
+func (v StrVector) Loc(p int) Vector {
+	if (p + 1) > v.size {
+		return StrVector{
+			err: fmt.Errorf("wrong position, vector size: %v, got %v", v.size, p),
+		}
+	}
+	return StrVector{
+		obs:  []string{v.obs[p]},
+		name: v.name,
+		size: 1,
+	}
+}
 
-	switch operator {
-	case "<":
-		return func(r *Row, s Subquery, eq bool) bool {
-			col := s.LS
-			val, err := strconv.ParseFloat(s.RS, 64)
-			if err != nil {
-				log.Fatal(err)
-			}
-			if eq {
-				return r.L(col) <= val
-			}
-			return r.L(col) < val
+// Table ...
+type Table struct {
+	data  []Vector
+	names []string
+	index []int
+	size  [2]int
+	err   error
+}
+
+// Loc ...
+func (df Table) Loc(p int) Vector {
+	if (p + 1) > df.size[1] {
+		// should be own type?
+		return IntVector{
+			err: fmt.Errorf("wrong position, table size: %v, got %v", df.size, p),
 		}
-	case ">":
-		return func(r *Row, s Subquery, eq bool) bool {
-			col := s.LS
-			val, err := strconv.ParseFloat(s.RS, 64)
-			if err != nil {
-				log.Fatal(err)
-			}
-			if eq {
-				return r.L(col) >= val
-			}
-			return r.L(col) > val
-		}
+	}
+	return df.data[p]
+}
+
+// NewVec ...
+func NewVec(data interface{}) (Vector, error) {
+	switch t := data.(type) {
+	case []int:
+		return IntVector{
+			obs:  t,
+			size: len(t),
+		}, nil
+
+	case []string:
+		return StrVector{
+			obs:  t,
+			size: len(t),
+		}, nil
 	default:
-		return func(r *Row, s Subquery, eq bool) bool {
-			col := s.LS
-			val, err := strconv.ParseFloat(s.RS, 64)
-			if err != nil {
-				log.Fatal(err)
-			}
-			return r.L(col) == val
-		}
+		return nil, fmt.Errorf("wrong data type, expected []int or []string, got %T", t)
 	}
 }
 
-func remove(s []float64, i int) []float64 {
-	s[i] = s[len(s)-1]
-	return s[:len(s)-1]
+// NewDf ...
+func NewDf(data map[string]Vector) (Table, error) {
+
+	names := make([]string, 0, len(data))
+	new := make([]Vector, 0, len(data))
+	// check dimensions
+	var nrow int
+	for _, val := range data {
+		nrow = val.Size()
+		break
+	}
+
+	for ix, val := range data {
+		if val.Size() != nrow {
+			return Table{data: nil}, fmt.Errorf("incorrect dimensions in column %v", ix)
+		}
+		names = append(names, ix)
+		new = append(new, val)
+	}
+
+	out := Table{
+		data:  new,
+		names: names,
+		index: []int{},
+		size:  [2]int{nrow, len(data)},
+	}
+	return out, nil
 }
 
-func (d Df) F(query string) Df {
-	sub := ParseQuery(query)
-
-	operations := make([]func(r *Row, s Subquery, eq bool) bool, len(sub))
-	equals := make([]bool, len(sub))
-
-	for ix := range sub {
-		equals[ix] = strings.Contains(sub[ix].Operator, "=")
-		operations[ix] = GetOperator(sub[ix], equals[ix])
-	}
-	fmt.Println(sub)
-	var newD Df
-
-	for _, val := range d.Rows {
-		keep := true
-		for col, f := range operations {
-			if !f(&val, sub[col], equals[col]) {
-				keep = false
-				break
-			}
-		}
-		if keep {
-			newD.Rows = append(newD.Rows, val)
-		}
-	}
-	return newD
+// Help constructing slices?
+func c(p ...int) []int {
+	return p
 }
 
 func main() {
-	m := map[string]int{
-		"abc":  0,
-		"efgh": 1,
+	vecI, err := NewVec([]int{0, 1, 2, 3, 4, 5})
+	if err != nil {
+		log.Fatal(err)
+	}
+	vecS, err := NewVec([]string{"a", "b", "c", "d", "e", "f"})
+	if err != nil {
+		log.Fatal(err)
+	}
+	df, err := NewDf(map[string]Vector{"ints": vecI, "strs": vecS})
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	Row1 := Row{m, []float64{1.0, 2.0}}
-	Row2 := Row{m, []float64{3.0, 5.0}}
-	Row3 := Row{m, []float64{5.0, 7.0}}
-
-	data := Df{[]Row{Row1, Row2, Row3}}
-
-	fmt.Println(data.F("abc < 5 & efgh < 5"))
+	fmt.Println(df)
+	for ix, val := range df.Loc(0).Loc(5).Get().([]int) {
+		fmt.Printf("%v = %v\n", ix, val)
+	}
 }
