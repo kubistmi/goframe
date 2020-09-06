@@ -48,4 +48,14 @@ func main() {
 	}})
 
 	fmt.Println(b)
+
+	c := df.Filter(mapf{
+		"ints": func(i int) bool {
+			return i < 4
+		},
+		"strs": func(s string) bool {
+			return s == "a" || s == "b" || s == "c"
+		},
+	})
+	fmt.Println(c)
 }

@@ -105,6 +105,27 @@ func (v IntVector) Mutate(f func(v int) int) Vector {
 	}
 }
 
+// Find ...
+func (v IntVector) Find(f func(v int) bool) []bool {
+	new := make([]bool, v.Size())
+	for ix, val := range v.obs {
+		new[ix] = f(val)
+	}
+	return new
+}
+
+// Filter ...
+func (v IntVector) Filter(f func(v int) bool) Vector {
+	locb := v.Find(f)
+	new := make([]int, 0, v.Size())
+	for ix, val := range locb {
+		if val {
+			new = append(new, ix)
+		}
+	}
+	return v.Loc(new)
+}
+
 // StrVector ... ---------------------------------------------------------------
 type StrVector struct {
 	obs     []string
@@ -176,4 +197,25 @@ func (v StrVector) Mutate(f func(v string) string) Vector {
 		index: v.index,
 		size:  v.size,
 	}
+}
+
+// Find ...
+func (v StrVector) Find(f func(v string) bool) []bool {
+	new := make([]bool, v.Size())
+	for ix, val := range v.obs {
+		new[ix] = f(val)
+	}
+	return new
+}
+
+// Filter ...
+func (v StrVector) Filter(f func(v string) bool) Vector {
+	locb := v.Find(f)
+	new := make([]int, 0, v.Size())
+	for ix, val := range locb {
+		if val {
+			new = append(new, ix)
+		}
+	}
+	return v.Loc(new)
 }
