@@ -1,0 +1,179 @@
+package main
+
+import "fmt"
+
+// Vector ...
+type Vector interface {
+	Size() int
+	//Get[T vector_type]() []T
+	Get() interface{}
+	Loc(p []int) Vector
+	Err() error
+	Copy() Vector
+}
+
+// NewVec ...
+func NewVec(data interface{}) Vector {
+	switch t := data.(type) {
+	case []int:
+		return IntVector{
+			obs:  t,
+			size: len(t),
+		}
+
+	case []string:
+		return StrVector{
+			obs:  t,
+			size: len(t),
+		}
+	default:
+		return StrVector{
+			err: fmt.Errorf("wrong data type, expected []int or []string, got %T", t),
+		}
+	}
+}
+
+// IntVector ... ---------------------------------------------------------------
+type IntVector struct {
+	obs   []int
+	index []int
+	size  int
+	err   error
+}
+
+// Size ...
+func (v IntVector) Size() int {
+	return v.size
+}
+
+// Get ...
+func (v IntVector) Get() interface{} {
+	return v.obs
+}
+
+// Err  ...
+func (v IntVector) Err() error {
+	return v.err
+}
+
+// Loc ...
+func (v IntVector) Loc(p []int) Vector {
+	new := make([]int, len(p))
+	for ix, val := range p {
+		if val >= v.Size() {
+			return IntVector{
+				err: fmt.Errorf("wrong position, maximum allowed: %v, got %v", v.Size()-1, val),
+			}
+		}
+		new[ix] = v.obs[val]
+	}
+	return IntVector{
+		obs:  new,
+		size: len(p),
+	}
+}
+
+// Copy ...
+func (v IntVector) Copy() Vector {
+
+	new := make([]int, v.size)
+	cp := copy(new, v.obs)
+	if cp != v.size {
+		return StrVector{
+			err: fmt.Errorf("copy returned a wrong number of elements, expected: %v, got:%v", v.size, cp),
+		}
+	}
+
+	return IntVector{
+		obs:   new,
+		size:  v.size,
+		index: v.index,
+		err:   v.err,
+	}
+}
+
+// Mutate ...
+func (v IntVector) Mutate(f func(v int) int) Vector {
+	new := make([]int, v.Size())
+	for ix, val := range v.obs {
+		new[ix] = f(val)
+	}
+	return IntVector{
+		obs:   new,
+		index: v.index,
+		size:  v.size,
+	}
+}
+
+// StrVector ... ---------------------------------------------------------------
+type StrVector struct {
+	obs     []string
+	index   []int
+	size    int
+	inverse map[string][]int //?inverse index
+	err     error
+}
+
+// Size ...
+func (v StrVector) Size() int {
+	return v.size
+}
+
+// Get ...
+func (v StrVector) Get() interface{} {
+	return v.obs
+}
+
+// Err  ...
+func (v StrVector) Err() error {
+	return v.err
+}
+
+// Loc ...
+func (v StrVector) Loc(p []int) Vector {
+	new := make([]string, len(p))
+	for ix, val := range p {
+		if val >= v.Size() {
+			return StrVector{
+				err: fmt.Errorf("wrong position, maximum allowed: %v, got %v", v.Size()-1, val),
+			}
+		}
+		new[ix] = v.obs[val]
+	}
+	return StrVector{
+		obs:  new,
+		size: len(new),
+	}
+}
+
+// Copy ...
+func (v StrVector) Copy() Vector {
+
+	new := make([]string, v.size)
+	cp := copy(new, v.obs)
+	if cp != v.size {
+		return StrVector{
+			err: fmt.Errorf("copy returned a wrong number of elements, expected: %v, got:%v", v.size, cp),
+		}
+	}
+
+	return StrVector{
+		obs:   new,
+		size:  v.size,
+		index: v.index,
+		err:   v.err,
+	}
+}
+
+// Mutate ...
+func (v StrVector) Mutate(f func(v string) string) Vector {
+	new := make([]string, v.Size())
+	for ix, val := range v.obs {
+		new[ix] = f(val)
+	}
+	return StrVector{
+		obs:   new,
+		index: v.index,
+		size:  v.size,
+	}
+}

@@ -126,18 +126,3 @@ func (d Df) F(query string) Df {
 	}
 	return newD
 }
-
-func main() {
-	m := map[string]int{
-		"abc":  0,
-		"efgh": 1,
-	}
-
-	Row1 := Row{m, []float64{1.0, 2.0}}
-	Row2 := Row{m, []float64{3.0, 5.0}}
-	Row3 := Row{m, []float64{5.0, 7.0}}
-
-	data := Df{[]Row{Row1, Row2, Row3}}
-
-	fmt.Println(data.F("abc < 5 & efgh < 5"))
-}
