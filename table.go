@@ -149,8 +149,8 @@ func (df Table) Filter(mf map[string]interface{}) Table {
 
 }
 
-// Mutate ...
-func (df Table) Mutate(mf map[string]interface{}) Table {
+// Mutate1 ...
+func (df Table) Mutate1(mf map[string]interface{}) Table {
 
 	new := make([]Vector, 0, df.size[1])
 
@@ -186,6 +186,59 @@ func (df Table) Mutate(mf map[string]interface{}) Table {
 		data:   new,
 		names:  df.names,
 		inames: df.inames,
+		index:  df.index,
+		size:   df.size,
+	}
+}
+
+// Mutate ///
+func (df Table) Mutate(mf ...mut) Table {
+
+	new := make([]Vector, 0, df.size[1])
+	names := make([]string, 0, len(df.names))
+
+	mutm := make(map[string][]mut, len(mf))
+	for _, val := range mf {
+		mutm[val.old] = append(mutm[val.old], val)
+	}
+
+	for ix, col := range df.names {
+		if muts, ok := mutm[col]; ok {
+			for _, mut := range muts {
+				switch v := df.data[ix].(type) {
+				case IntVector:
+					switch f := mut.fun.(type) {
+					case func(int) int:
+						new = append(new, v.Mutate(f))
+						names = append(names, mut.new)
+					default:
+						return Table{
+							err: fmt.Errorf("wrong function definition, expected func(int) int, got %T", f),
+						}
+					}
+				case StrVector:
+					switch f := mut.fun.(type) {
+					case func(string) string:
+						new = append(new, v.Mutate(f))
+						names = append(names, mut.new)
+					default:
+						return Table{
+							err: fmt.Errorf("wrong function definition, expected func(int) int, got %T", f),
+						}
+					}
+				}
+			}
+
+		} else {
+			new = append(new, df.data[ix])
+			names = append(names, df.names[ix])
+		}
+	}
+
+	return Table{
+		data:   new,
+		names:  names,
+		inames: inverse(names),
 		index:  df.index,
 		size:   df.size,
 	}

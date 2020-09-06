@@ -20,6 +20,11 @@ func c(p ...int) []int {
 
 type mapf map[string]interface{}
 
+type mut struct {
+	new, old string
+	fun      interface{}
+}
+
 func main() {
 
 	vecI := NewVec([]int{0, 1, 2, 3, 4, 5})
@@ -43,9 +48,13 @@ func main() {
 	fmt.Println(df.Rows(c(1, 2)))
 	fmt.Printf("%v\n", df.Rows(c(20)).err)
 
-	b := df.Mutate(mapf{"ints": func(i int) int {
-		return i * 3
-	}})
+	b := df.Mutate(
+		mut{"ints", "ints", func(i int) int {
+			return i * 3
+		}},
+		mut{"test", "ints", func(i int) int {
+			return i * i
+		}})
 
 	fmt.Println(b)
 
