@@ -45,7 +45,12 @@ func NewDf(data map[string]Vector) (Table, error) {
 }
 
 // Pull ...
-func (df Table) Pull(p int) Vector {
+func (df Table) Pull(n string) Vector {
+	return df.Pulln(df.inames[n])
+}
+
+// Pulln ...
+func (df Table) Pulln(p int) Vector {
 	if p >= df.size[1] {
 		//? should be own type
 		return StrVector{
@@ -56,7 +61,20 @@ func (df Table) Pull(p int) Vector {
 }
 
 // Cols ...
-func (df Table) Cols(p []int) Table {
+func (df Table) Cols(n []string) Table {
+	ind := make([]int, 0, len(n))
+	for _, val := range n {
+		if i, ok := df.inames[val]; ok {
+			ind = append(ind, i)
+		} else {
+			return Table{err: fmt.Errorf("column '%v' not found in df.names", val)}
+		}
+	}
+	return df.Colsn(ind)
+}
+
+// Colsn ...
+func (df Table) Colsn(p []int) Table {
 	new := make([]Vector, len(p))
 	names := make([]string, len(p))
 	for ix, val := range p {
