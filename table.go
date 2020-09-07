@@ -261,3 +261,18 @@ func (df Table) Mutate(mf ...mut) Table {
 		size:   df.size,
 	}
 }
+
+// Assign ...
+func (df Table) Assign(name string, v Vector) Table {
+	if v.Size() != df.size[0] {
+		return Table{err: fmt.Errorf("wrong vector size, table size: %v, vector size: %v", df.size[0], v.Size())}
+	}
+	if col, ok := df.inames[name]; ok {
+		df.data = append(df.data[:col], df.data[col+1:]...)
+		df.names = append(df.names[:col], df.names[col+1:]...)
+	}
+	df.data = append(df.data, v)
+	df.names = append(df.names, name)
+	df.inames = inverse(df.names)
+	return (df)
+}

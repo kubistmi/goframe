@@ -48,17 +48,16 @@ func main() {
 	fmt.Println(df.Rows(c(1, 2)))
 	fmt.Printf("%v\n", df.Rows(c(20)).err)
 
-	b := df.Mutate(
+	a := df.Mutate(
 		mut{"ints", "ints", func(i int) int {
 			return i * 3
 		}},
 		mut{"test", "ints", func(i int) int {
 			return i * i
 		}})
+	fmt.Println(a)
 
-	fmt.Println(b)
-
-	c := df.Filter(mapf{
+	b := df.Filter(mapf{
 		"ints": func(i int) bool {
 			return i < 4
 		},
@@ -66,5 +65,19 @@ func main() {
 			return s == "a" || s == "b" || s == "c"
 		},
 	})
+	fmt.Println(b)
+
+	c := df.Assign("lints", NewVec([]int{5, 6, 7, 8, 9, 10}))
 	fmt.Println(c)
+
+	d := c.Assign("prod", func(a, b Vector) Vector {
+		as := a.GetI().([]int)
+		bs := b.GetI().([]int)
+		for ix := range as {
+			as[ix] = as[ix] * bs[ix]
+		}
+		return NewVec(as)
+	}(df.Pull("ints"), df.Pull("lints")))
+
+	fmt.Println(d)
 }
