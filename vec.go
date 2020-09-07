@@ -6,7 +6,7 @@ import "fmt"
 type Vector interface {
 	Size() int
 	//Get[T vector_type]() []T
-	Get() interface{}
+	GetI() interface{}
 	Loc(p []int) Vector
 	Err() error
 	Copy() Vector
@@ -47,7 +47,13 @@ func (v IntVector) Size() int {
 }
 
 // Get ...
-func (v IntVector) Get() interface{} {
+func (v IntVector) GetI() interface{} {
+	new := make([]int, v.Size())
+	copy(new, v.obs)
+	return new
+}
+
+func (v IntVector) Get() []int {
 	return v.obs
 }
 
@@ -141,8 +147,14 @@ func (v StrVector) Size() int {
 }
 
 // Get ...
-func (v StrVector) Get() interface{} {
+func (v StrVector) GetI() interface{} {
 	return v.obs
+}
+
+func (v StrVector) Get() []string {
+	new := make([]string, v.Size())
+	copy(new, v.obs)
+	return new
 }
 
 // Err  ...

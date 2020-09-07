@@ -41,7 +41,7 @@ func main() {
 	}
 
 	fmt.Println(df)
-	for ix, val := range df.Pull(0).Loc([]int{5}).Get().([]int) {
+	for ix, val := range df.Pulln(0).Loc([]int{1, 2, 5}).GetI().([]int) {
 		fmt.Printf("%v = %v\n", ix, val)
 	}
 
