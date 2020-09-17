@@ -172,6 +172,8 @@ func (df Table) Mutate1(mf map[string]interface{}) Table {
 
 	new := make([]Vector, 0, df.size[1])
 
+	//TODO: DONT COPY!
+	// Should be implemented together with Table as map[string]Vector
 	for ix, col := range df.names {
 		if fun, ok := mf[col]; ok {
 			switch v := df.data[ix].(type) {
@@ -214,7 +216,8 @@ func (df Table) Mutate(mf ...mut) Table {
 
 	new := make([]Vector, 0, df.size[1])
 	names := make([]string, 0, len(df.names))
-
+	//TODO: DONT COPY!
+	// Should be implemented together with Table as map[string]Vector
 	mutm := make(map[string][]mut, len(mf))
 	for _, val := range mf {
 		mutm[val.old] = append(mutm[val.old], val)

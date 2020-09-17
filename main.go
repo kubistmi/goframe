@@ -41,7 +41,9 @@ func main() {
 	}
 
 	fmt.Println(df)
-	for ix, val := range df.Pulln(0).Loc([]int{1, 2, 5}).GetI().([]int) {
+	data, _ := df.Pulln(0).Loc([]int{1, 2, 5}).GetI()
+	for ix, val := range data.([]int) {
+		fmt.Printf("%v = %v\n", ix, val)
 		fmt.Printf("%v = %v\n", ix, val)
 	}
 
@@ -71,8 +73,11 @@ func main() {
 	fmt.Println(c)
 
 	d := c.Assign("prod", func(a, b Vector) Vector {
-		as := a.GetI().([]int)
-		bs := b.GetI().([]int)
+		slcA, _ := a.GetI()
+		as := slcA.([]int)
+
+		slcB, _ := b.GetI()
+		bs := slcB.([]int)
 		for ix := range as {
 			as[ix] = as[ix] * bs[ix]
 		}

@@ -6,24 +6,30 @@ import "fmt"
 type Vector interface {
 	Size() int
 	//Get[T vector_type]() []T
-	GetI() interface{}
+	GetI() (interface{}, map[int]bool)
 	Loc(p []int) Vector
 	Err() error
 	Copy() Vector
 }
 
 // NewVec ...
-func NewVec(data interface{}) Vector {
+func NewVec(data interface{}, na ...map[int]bool) Vector {
 	switch t := data.(type) {
 	case []int:
+		new := make([]int, len(t))
+		copy(new, t)
 		return IntVector{
-			obs:  t,
+			obs:  new,
+			na:   na[0],
 			size: len(t),
 		}
 
 	case []string:
+		new := make([]string, len(t))
+		copy(new, t)
 		return StrVector{
-			obs:  t,
+			obs:  new,
+			na:   na[0],
 			size: len(t),
 		}
 	default:
@@ -33,9 +39,18 @@ func NewVec(data interface{}) Vector {
 	}
 }
 
+func cpMap(m map[int]bool) map[int]bool {
+	new := make(map[int]bool)
+	for key, val := range m {
+		new[key] = val
+	}
+	return new
+}
+
 // IntVector ... ---------------------------------------------------------------
 type IntVector struct {
 	obs   []int
+	na    map[int]bool
 	index []int
 	size  int
 	err   error
@@ -46,15 +61,20 @@ func (v IntVector) Size() int {
 	return v.size
 }
 
-// Get ...
-func (v IntVector) GetI() interface{} {
+// GetI ...
+func (v IntVector) GetI() (interface{}, map[int]bool) {
 	new := make([]int, v.Size())
 	copy(new, v.obs)
-	return new
+	nas := cpMap(v.na)
+	return new, nas
 }
 
-func (v IntVector) Get() []int {
-	return v.obs
+// Get ...
+func (v IntVector) Get() ([]int, map[int]bool) {
+	new := make([]int, v.Size())
+	copy(new, v.obs)
+	nas := cpMap(v.na)
+	return new, nas
 }
 
 // Err  ...
@@ -65,6 +85,7 @@ func (v IntVector) Err() error {
 // Loc ...
 func (v IntVector) Loc(p []int) Vector {
 	new := make([]int, len(p))
+	nas := make(map[int]bool)
 	for ix, val := range p {
 		if val >= v.Size() {
 			return IntVector{
@@ -72,9 +93,13 @@ func (v IntVector) Loc(p []int) Vector {
 			}
 		}
 		new[ix] = v.obs[val]
+		if _, ok := v.na[val]; ok {
+			nas[ix] = true
+		}
 	}
 	return IntVector{
 		obs:  new,
+		na:   nas,
 		size: len(p),
 	}
 }
@@ -83,15 +108,12 @@ func (v IntVector) Loc(p []int) Vector {
 func (v IntVector) Copy() Vector {
 
 	new := make([]int, v.size)
-	cp := copy(new, v.obs)
-	if cp != v.size {
-		return StrVector{
-			err: fmt.Errorf("copy returned a wrong number of elements, expected: %v, got:%v", v.size, cp),
-		}
-	}
+	copy(new, v.obs)
+	nas := cpMap(v.na)
 
 	return IntVector{
 		obs:   new,
+		na:    nas,
 		size:  v.size,
 		index: v.index,
 		err:   v.err,
@@ -106,6 +128,7 @@ func (v IntVector) Mutate(f func(v int) int) Vector {
 	}
 	return IntVector{
 		obs:   new,
+		na:    v.na,
 		index: v.index,
 		size:  v.size,
 	}
@@ -115,7 +138,11 @@ func (v IntVector) Mutate(f func(v int) int) Vector {
 func (v IntVector) Find(f func(v int) bool) []bool {
 	new := make([]bool, v.Size())
 	for ix, val := range v.obs {
-		new[ix] = f(val)
+		if _, ok := v.na[ix]; ok {
+			new[ix] = false
+		} else {
+			new[ix] = f(val)
+		}
 	}
 	return new
 }
@@ -135,6 +162,7 @@ func (v IntVector) Filter(f func(v int) bool) Vector {
 // StrVector ... ---------------------------------------------------------------
 type StrVector struct {
 	obs     []string
+	na      map[int]bool
 	index   []int
 	size    int
 	inverse map[string][]int //?inverse index
@@ -146,15 +174,20 @@ func (v StrVector) Size() int {
 	return v.size
 }
 
-// Get ...
-func (v StrVector) GetI() interface{} {
-	return v.obs
-}
-
-func (v StrVector) Get() []string {
+// GetI ...
+func (v StrVector) GetI() (interface{}, map[int]bool) {
 	new := make([]string, v.Size())
 	copy(new, v.obs)
-	return new
+	nas := cpMap(v.na)
+	return new, nas
+}
+
+// Get ...
+func (v StrVector) Get() ([]string, map[int]bool) {
+	new := make([]string, v.Size())
+	copy(new, v.obs)
+	nas := cpMap(v.na)
+	return new, nas
 }
 
 // Err  ...
@@ -164,7 +197,9 @@ func (v StrVector) Err() error {
 
 // Loc ...
 func (v StrVector) Loc(p []int) Vector {
+
 	new := make([]string, len(p))
+	nas := make(map[int]bool)
 	for ix, val := range p {
 		if val >= v.Size() {
 			return StrVector{
@@ -172,9 +207,13 @@ func (v StrVector) Loc(p []int) Vector {
 			}
 		}
 		new[ix] = v.obs[val]
+		if _, ok := v.na[val]; ok {
+			nas[ix] = true
+		}
 	}
 	return StrVector{
 		obs:  new,
+		na:   nas,
 		size: len(new),
 	}
 }
@@ -183,15 +222,12 @@ func (v StrVector) Loc(p []int) Vector {
 func (v StrVector) Copy() Vector {
 
 	new := make([]string, v.size)
-	cp := copy(new, v.obs)
-	if cp != v.size {
-		return StrVector{
-			err: fmt.Errorf("copy returned a wrong number of elements, expected: %v, got:%v", v.size, cp),
-		}
-	}
+	copy(new, v.obs)
+	nas := cpMap(v.na)
 
 	return StrVector{
 		obs:   new,
+		na:    nas,
 		size:  v.size,
 		index: v.index,
 		err:   v.err,
@@ -206,6 +242,7 @@ func (v StrVector) Mutate(f func(v string) string) Vector {
 	}
 	return StrVector{
 		obs:   new,
+		na:    v.na,
 		index: v.index,
 		size:  v.size,
 	}
@@ -214,8 +251,13 @@ func (v StrVector) Mutate(f func(v string) string) Vector {
 // Find ...
 func (v StrVector) Find(f func(v string) bool) []bool {
 	new := make([]bool, v.Size())
+
 	for ix, val := range v.obs {
-		new[ix] = f(val)
+		if _, ok := v.na[ix]; ok {
+			new[ix] = false
+		} else {
+			new[ix] = f(val)
+		}
 	}
 	return new
 }
