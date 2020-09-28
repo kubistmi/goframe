@@ -2,10 +2,9 @@ package vec
 
 // IntVector ... ---------------------------------------------------------------
 type IntVector struct {
-	obs    []int
-	na     Set
-	index  []int
-	hashix struct {
+	obs   []int
+	na    Set
+	index struct {
 		lookup map[int]int
 		size   int
 	}
@@ -54,15 +53,14 @@ func (v IntVector) Copy() Vector {
 
 // StrVector ... ---------------------------------------------------------------
 type StrVector struct {
-	obs    []string
-	na     Set
-	index  []int
-	hashix struct {
+	obs   []string
+	na    Set
+	index struct {
 		lookup map[string]int
 		size   int
 	}
 	size    int
-	inverse map[string][]int //?inverse index
+	inverse map[string][]int //! inverse index
 	err     error
 }
 

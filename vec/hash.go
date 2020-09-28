@@ -1,6 +1,6 @@
 package vec
 
-// Hash ... TEST HASH INDEX ---------------------------------------------------
+// Hash ...
 func (v IntVector) Hash() Vector {
 	nhash := make(map[int]int)
 
@@ -17,7 +17,7 @@ func (v IntVector) Hash() Vector {
 		size   int
 	}{nhash, i}
 
-	v.hashix = nhix
+	v.index = nhix
 	return (v)
 }
 
@@ -38,44 +38,44 @@ func (v StrVector) Hash() Vector {
 		size   int
 	}{nhash, i}
 
-	v.hashix = nhix
+	v.index = nhix
 	return (v)
 }
 
 // GetHash ...
 func (v IntVector) GetHash(l int) int {
-	return v.hashix.lookup[l]
+	return v.index.lookup[l]
 }
 
 // GetHash ...
 func (v StrVector) GetHash(l string) int {
-	return v.hashix.lookup[l]
+	return v.index.lookup[l]
 }
 
 // IsHashed ...
 func (v IntVector) IsHashed() bool {
-	return len(v.hashix.lookup) > 0
+	return len(v.index.lookup) > 0
 }
 
 // IsHashed ...
 func (v StrVector) IsHashed() bool {
-	return len(v.hashix.lookup) > 0
+	return len(v.index.lookup) > 0
 }
 
 // GetHashVals ...
 func (v IntVector) GetHashVals() ([]int, int) {
 	out := make([]int, v.size)
 	for ix, val := range v.obs {
-		out[ix] = v.hashix.lookup[val]
+		out[ix] = v.index.lookup[val]
 	}
-	return out, v.hashix.size
+	return out, v.index.size
 }
 
 // GetHashVals ...
 func (v StrVector) GetHashVals() ([]int, int) {
 	out := make([]int, v.size)
 	for ix, val := range v.obs {
-		out[ix] = v.hashix.lookup[val]
+		out[ix] = v.index.lookup[val]
 	}
-	return out, v.hashix.size
+	return out, v.index.size
 }
