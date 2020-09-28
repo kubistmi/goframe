@@ -1,4 +1,3 @@
 # TODO
-- rework NA into a set (map[int]struct{}) with helper functions
 - rework functions to be NA compliant
 - rework functions to better handle Errors (chaining)

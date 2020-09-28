@@ -3,7 +3,7 @@ package vec
 // IntVector ... ---------------------------------------------------------------
 type IntVector struct {
 	obs    []int
-	na     map[int]bool
+	na     Set
 	index  []int
 	hashix struct {
 		lookup map[int]int
@@ -19,19 +19,17 @@ func (v IntVector) Size() int {
 }
 
 // GetI ...
-func (v IntVector) GetI() (interface{}, map[int]bool) {
+func (v IntVector) GetI() (interface{}, Set) {
 	new := make([]int, v.Size())
 	copy(new, v.obs)
-	nas := cpMap(v.na)
-	return new, nas
+	return new, v.na.Copy()
 }
 
 // Get ...
-func (v IntVector) Get() ([]int, map[int]bool) {
+func (v IntVector) Get() ([]int, Set) {
 	new := make([]int, v.Size())
 	copy(new, v.obs)
-	nas := cpMap(v.na)
-	return new, nas
+	return new, v.na.Copy()
 }
 
 // Err  ...
@@ -44,11 +42,10 @@ func (v IntVector) Copy() Vector {
 
 	new := make([]int, v.size)
 	copy(new, v.obs)
-	nas := cpMap(v.na)
 
 	return IntVector{
 		obs:   new,
-		na:    nas,
+		na:    v.na.Copy(),
 		size:  v.size,
 		index: v.index,
 		err:   v.err,
@@ -58,7 +55,7 @@ func (v IntVector) Copy() Vector {
 // StrVector ... ---------------------------------------------------------------
 type StrVector struct {
 	obs    []string
-	na     map[int]bool
+	na     Set
 	index  []int
 	hashix struct {
 		lookup map[string]int
@@ -75,19 +72,17 @@ func (v StrVector) Size() int {
 }
 
 // GetI ...
-func (v StrVector) GetI() (interface{}, map[int]bool) {
+func (v StrVector) GetI() (interface{}, Set) {
 	new := make([]string, v.Size())
 	copy(new, v.obs)
-	nas := cpMap(v.na)
-	return new, nas
+	return new, v.na.Copy()
 }
 
 // Get ...
-func (v StrVector) Get() ([]string, map[int]bool) {
+func (v StrVector) Get() ([]string, Set) {
 	new := make([]string, v.Size())
 	copy(new, v.obs)
-	nas := cpMap(v.na)
-	return new, nas
+	return new, v.na.Copy()
 }
 
 // Err  ...
@@ -100,11 +95,10 @@ func (v StrVector) Copy() Vector {
 
 	new := make([]string, v.size)
 	copy(new, v.obs)
-	nas := cpMap(v.na)
 
 	return StrVector{
 		obs:   new,
-		na:    nas,
+		na:    v.na.Copy(),
 		size:  v.size,
 		index: v.index,
 		err:   v.err,
