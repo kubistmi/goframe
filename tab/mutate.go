@@ -6,8 +6,10 @@ import (
 	"github.com/kubistmi/goframe/vec"
 )
 
+type mapf map[string]interface{}
+
 // Mutate1 ...
-func (df Table) Mutate1(mf map[string]interface{}) Table {
+func (df Table) Mutate1(mf mapf) Table {
 
 	new := make([]vec.Vector, 0, df.size[1])
 
@@ -110,6 +112,11 @@ func (df Table) Mutate2(mf ...mut2) Table {
 		index:  df.index,
 		size:   df.size,
 	}
+}
+
+type mut struct {
+	new, old string
+	fun      interface{}
 }
 
 // Mutate ///

@@ -19,13 +19,6 @@ func c(p ...int) []int {
 	return p
 }
 
-type mapf map[string]interface{}
-
-type mut struct {
-	new, old string
-	fun      interface{}
-}
-
 // Table ... -------------------------------------------------------------------
 type Table struct {
 	data   []vec.Vector
