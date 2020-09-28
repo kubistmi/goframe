@@ -1,4 +1,4 @@
-package main
+package vec
 
 import "fmt"
 
@@ -10,17 +10,37 @@ type Vector interface {
 	Loc(p []int) Vector
 	Err() error
 	Copy() Vector
+	Hash() Vector
+	GetHashVals() ([]int, int)
+	IsHashed() bool
+	//TODO: remove after testing
+	Elem(int) (interface{}, bool)
+}
+
+// NewErrVec ...
+func NewErrVec(err error) Vector {
+	return StrVector{
+		err: err,
+	}
 }
 
 // NewVec ...
-func NewVec(data interface{}, na ...map[int]bool) Vector {
+func NewVec(data interface{}, nas ...map[int]bool) Vector {
+
+	var na map[int]bool
+	if len(nas) == 0 {
+		na = make(map[int]bool)
+	} else {
+		na = nas[0]
+	}
+
 	switch t := data.(type) {
 	case []int:
 		new := make([]int, len(t))
 		copy(new, t)
 		return IntVector{
 			obs:  new,
-			na:   na[0],
+			na:   na,
 			size: len(t),
 		}
 
@@ -29,7 +49,7 @@ func NewVec(data interface{}, na ...map[int]bool) Vector {
 		copy(new, t)
 		return StrVector{
 			obs:  new,
-			na:   na[0],
+			na:   na,
 			size: len(t),
 		}
 	default:
@@ -37,49 +57,6 @@ func NewVec(data interface{}, na ...map[int]bool) Vector {
 			err: fmt.Errorf("wrong data type, expected []int or []string, got %T", t),
 		}
 	}
-}
-
-func cpMap(m map[int]bool) map[int]bool {
-	new := make(map[int]bool)
-	for key, val := range m {
-		new[key] = val
-	}
-	return new
-}
-
-// IntVector ... ---------------------------------------------------------------
-type IntVector struct {
-	obs   []int
-	na    map[int]bool
-	index []int
-	size  int
-	err   error
-}
-
-// Size ...
-func (v IntVector) Size() int {
-	return v.size
-}
-
-// GetI ...
-func (v IntVector) GetI() (interface{}, map[int]bool) {
-	new := make([]int, v.Size())
-	copy(new, v.obs)
-	nas := cpMap(v.na)
-	return new, nas
-}
-
-// Get ...
-func (v IntVector) Get() ([]int, map[int]bool) {
-	new := make([]int, v.Size())
-	copy(new, v.obs)
-	nas := cpMap(v.na)
-	return new, nas
-}
-
-// Err  ...
-func (v IntVector) Err() error {
-	return v.err
 }
 
 // Loc ...
@@ -101,22 +78,6 @@ func (v IntVector) Loc(p []int) Vector {
 		obs:  new,
 		na:   nas,
 		size: len(p),
-	}
-}
-
-// Copy ...
-func (v IntVector) Copy() Vector {
-
-	new := make([]int, v.size)
-	copy(new, v.obs)
-	nas := cpMap(v.na)
-
-	return IntVector{
-		obs:   new,
-		na:    nas,
-		size:  v.size,
-		index: v.index,
-		err:   v.err,
 	}
 }
 
@@ -159,42 +120,6 @@ func (v IntVector) Filter(f func(v int) bool) Vector {
 	return v.Loc(new)
 }
 
-// StrVector ... ---------------------------------------------------------------
-type StrVector struct {
-	obs     []string
-	na      map[int]bool
-	index   []int
-	size    int
-	inverse map[string][]int //?inverse index
-	err     error
-}
-
-// Size ...
-func (v StrVector) Size() int {
-	return v.size
-}
-
-// GetI ...
-func (v StrVector) GetI() (interface{}, map[int]bool) {
-	new := make([]string, v.Size())
-	copy(new, v.obs)
-	nas := cpMap(v.na)
-	return new, nas
-}
-
-// Get ...
-func (v StrVector) Get() ([]string, map[int]bool) {
-	new := make([]string, v.Size())
-	copy(new, v.obs)
-	nas := cpMap(v.na)
-	return new, nas
-}
-
-// Err  ...
-func (v StrVector) Err() error {
-	return v.err
-}
-
 // Loc ...
 func (v StrVector) Loc(p []int) Vector {
 
@@ -215,22 +140,6 @@ func (v StrVector) Loc(p []int) Vector {
 		obs:  new,
 		na:   nas,
 		size: len(new),
-	}
-}
-
-// Copy ...
-func (v StrVector) Copy() Vector {
-
-	new := make([]string, v.size)
-	copy(new, v.obs)
-	nas := cpMap(v.na)
-
-	return StrVector{
-		obs:   new,
-		na:    nas,
-		size:  v.size,
-		index: v.index,
-		err:   v.err,
 	}
 }
 
