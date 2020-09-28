@@ -13,8 +13,8 @@ func (v IntVector) Loc(p []int) Vector {
 			}
 		}
 		new[ix] = v.obs[val]
-		if e, ok := v.na[val]; ok {
-			nas[ix] = e
+		if v.na.Get(val) {
+			nas = nas.Set(val)
 		}
 	}
 	return IntVector{
@@ -36,8 +36,8 @@ func (v StrVector) Loc(p []int) Vector {
 			}
 		}
 		new[ix] = v.obs[val]
-		if e, ok := v.na[val]; ok {
-			nas[ix] = e
+		if v.na.Get(val) {
+			nas = nas.Set(val)
 		}
 	}
 	return StrVector{
@@ -51,7 +51,7 @@ func (v StrVector) Loc(p []int) Vector {
 func (v IntVector) Find(f func(v int) bool) []bool {
 	new := make([]bool, v.Size())
 	for ix, val := range v.obs {
-		if _, ok := v.na[ix]; ok {
+		if v.na.Get(ix) {
 			new[ix] = false
 		} else {
 			new[ix] = f(val)
@@ -65,7 +65,7 @@ func (v StrVector) Find(f func(v string) bool) []bool {
 	new := make([]bool, v.Size())
 
 	for ix, val := range v.obs {
-		if _, ok := v.na[ix]; ok {
+		if v.na.Get(ix) {
 			new[ix] = false
 		} else {
 			new[ix] = f(val)

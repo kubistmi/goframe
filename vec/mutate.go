@@ -1,6 +1,7 @@
 package vec
 
 // Mutate ...
+//TODO: handle NAs
 func (v IntVector) Mutate(f func(v int) int) Vector {
 	new := make([]int, v.Size())
 	for ix, val := range v.obs {
@@ -15,6 +16,7 @@ func (v IntVector) Mutate(f func(v int) int) Vector {
 }
 
 // Mutate ...
+//TODO: handle NAs
 func (v StrVector) Mutate(f func(v string) string) Vector {
 	new := make([]string, v.Size())
 	for ix, val := range v.obs {
