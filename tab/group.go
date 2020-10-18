@@ -1,5 +1,7 @@
 package tab
 
+import "github.com/kubistmi/goframe/vec"
+
 // GetIndex ...
 func (df Table) GetIndex() map[int][]int {
 	return df.index
@@ -20,12 +22,14 @@ func (df Table) Group(cols []string) Table {
 	offset[0] = 1
 
 	for j, col := range pos {
-		if !df.data[col].IsHashed() {
-			df.data[col] = df.data[col].Hash()
+		colH, ok := df.data[col].(vec.Hashable)
+		if !ok {
+			colH = vec.Hash(df.data[col])
+			df.data[col] = colH
 		}
 		var off int
 
-		hashtab[j], off = df.data[col].GetHashVals()
+		hashtab[j], off = colH.GetHashVals()
 		offset[j+1] = off * offset[j]
 	}
 
