@@ -10,13 +10,14 @@ type Vector interface {
 	//Get[T vector_type]() []T
 	GetI() (interface{}, Set)
 	Loc(p []int) Vector
+	AssignM([]int, interface{}, Set) Vector
+	AssignI(int, interface{}, bool) Vector
 	Err() error
 	Copy() Vector
-	Hash() Vector
-	GetHashVals() ([]int, int)
-	IsHashed() bool
 	//TODO: remove after testing
 	Elem(int) (interface{}, bool)
+	Sort() Vector
+	Order() []int
 }
 
 // NewErrVec ...
