@@ -8,10 +8,10 @@ func (v IntVector) Mutate(f func(v int) int) Vector {
 		new[ix] = f(val)
 	}
 	return IntVector{
-		obs:   new,
-		na:    v.na,
-		index: v.index,
-		size:  v.size,
+		obs:  new,
+		na:   v.na,
+		hash: v.hash,
+		size: v.size,
 	}
 }
 
@@ -23,9 +23,9 @@ func (v StrVector) Mutate(f func(v string) string) Vector {
 		new[ix] = f(val)
 	}
 	return StrVector{
-		obs:   new,
-		na:    v.na,
-		index: v.index,
-		size:  v.size,
+		obs:  new,
+		na:   v.na,
+		hash: v.hash,
+		size: v.size,
 	}
 }

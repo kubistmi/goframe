@@ -45,11 +45,11 @@ func (v IntVector) Copy() Vector {
 	copy(new, v.obs)
 
 	return IntVector{
-		obs:   new,
-		na:    v.na.Copy(),
-		size:  v.size,
-		index: v.index,
-		err:   v.err,
+		obs:  new,
+		na:   v.na.Copy(),
+		size: v.size,
+		hash: v.hash,
+		err:  v.err,
 	}
 }
 
@@ -60,10 +60,10 @@ func (v StrVector) Copy() Vector {
 	copy(new, v.obs)
 
 	return StrVector{
-		obs:   new,
-		na:    v.na.Copy(),
-		size:  v.size,
-		index: v.index,
-		err:   v.err,
+		obs:  new,
+		na:   v.na.Copy(),
+		size: v.size,
+		hash: v.hash,
+		err:  v.err,
 	}
 }
