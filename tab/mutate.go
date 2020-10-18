@@ -172,3 +172,8 @@ func (df Table) Mutate(mf ...mut) Table {
 		size:   df.size,
 	}
 }
+
+// Pipe ...
+func (df Table) Pipe(f func(Table) Table) Table {
+	return f(df)
+}
