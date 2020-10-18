@@ -47,8 +47,8 @@ func (v StrVector) Loc(p []int) Vector {
 	}
 }
 
-// Find ...
-func (v IntVector) Find(f func(v int) bool) []bool {
+// Mask ...
+func (v IntVector) Mask(f func(v int) bool) []bool {
 	new := make([]bool, v.Size())
 	for ix, val := range v.obs {
 		if v.na.Get(ix) {
@@ -60,8 +60,8 @@ func (v IntVector) Find(f func(v int) bool) []bool {
 	return new
 }
 
-// Find ...
-func (v StrVector) Find(f func(v string) bool) []bool {
+// Mask ...
+func (v StrVector) Mask(f func(v string) bool) []bool {
 	new := make([]bool, v.Size())
 
 	for ix, val := range v.obs {
@@ -76,7 +76,7 @@ func (v StrVector) Find(f func(v string) bool) []bool {
 
 // Filter ...
 func (v IntVector) Filter(f func(v int) bool) Vector {
-	locb := v.Find(f)
+	locb := v.Mask(f)
 	new := make([]int, 0, v.Size())
 	for ix, val := range locb {
 		if val {
@@ -88,7 +88,7 @@ func (v IntVector) Filter(f func(v int) bool) Vector {
 
 // Filter ...
 func (v StrVector) Filter(f func(v string) bool) Vector {
-	locb := v.Find(f)
+	locb := v.Mask(f)
 	new := make([]int, 0, v.Size())
 	for ix, val := range locb {
 		if val {
