@@ -1,57 +1,44 @@
 package vec
 
-import "fmt"
+func (v IntVector) Hash() Vector {
 
-// Hashable ...
-type Hashable interface {
-	Vector
-	GetHashVals() ([]int, int)
-}
+	nhash := make(map[int]int)
 
-// Hash ...
-func Hash(v Vector) Hashable {
-
-	switch v := v.(type) {
-	case IntVector:
-		nhash := make(map[int]int)
-
-		i := 0
-		for _, val := range v.obs {
-			if _, ok := nhash[val]; !ok {
-				nhash[val] = i
-				i++
-			}
+	i := 0
+	for _, val := range v.obs {
+		if _, ok := nhash[val]; !ok {
+			nhash[val] = i
+			i++
 		}
-
-		nhix := struct {
-			lookup map[int]int
-			size   int
-		}{nhash, i}
-
-		v.hash = nhix
-		return v
-
-	case StrVector:
-		nhash := make(map[string]int)
-
-		i := 0
-		for _, val := range v.obs {
-			if _, ok := nhash[val]; !ok {
-				nhash[val] = i
-				i++
-			}
-		}
-
-		nhix := struct {
-			lookup map[string]int
-			size   int
-		}{nhash, i}
-
-		v.hash = nhix
-		return v
 	}
 
-	return StrVector{err: fmt.Errorf("What?")}
+	nhix := struct {
+		lookup map[int]int
+		size   int
+	}{nhash, i}
+
+	v.hash = nhix
+	return v
+}
+
+func (v StrVector) Hash() Vector {
+	nhash := make(map[string]int)
+
+	i := 0
+	for _, val := range v.obs {
+		if _, ok := nhash[val]; !ok {
+			nhash[val] = i
+			i++
+		}
+	}
+
+	nhix := struct {
+		lookup map[string]int
+		size   int
+	}{nhash, i}
+
+	v.hash = nhix
+	return v
 }
 
 // GetHash ...
@@ -91,3 +78,60 @@ func (v StrVector) GetHashVals() ([]int, int) {
 	}
 	return out, v.hash.size
 }
+
+// Let's leave this interface her - dunno why it doesnt work
+// // Hashable ...
+// type Hashable interface {
+// 	Vector
+// 	GetHashVals() ([]int, int)
+// }
+
+// Hash ...
+// func Hash(v Vector) Hashable {
+
+// 	switch v := v.(type) {
+// 	case IntVector:
+// 		nhash := make(map[int]int)
+
+// 		i := 0
+// 		for _, val := range v.obs {
+// 			if _, ok := nhash[val]; !ok {
+// 				nhash[val] = i
+// 				i++
+// 			}
+// 		}
+
+// 		fmt.Println(nhash)
+
+// 		nhix := struct {
+// 			lookup map[int]int
+// 			size   int
+// 		}{nhash, i}
+
+// 		v.hash = nhix
+// 		return v
+
+// 	case StrVector:
+// 		nhash := make(map[string]int)
+
+// 		i := 0
+// 		for _, val := range v.obs {
+// 			if _, ok := nhash[val]; !ok {
+// 				nhash[val] = i
+// 				i++
+// 			}
+// 		}
+
+// 		fmt.Println(nhash)
+
+// 		nhix := struct {
+// 			lookup map[string]int
+// 			size   int
+// 		}{nhash, i}
+
+// 		v.hash = nhix
+// 		return v
+// 	}
+
+// 	return StrVector{err: fmt.Errorf("What?")}
+// }

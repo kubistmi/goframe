@@ -13,6 +13,9 @@ type Vector interface {
 	AssignM([]int, interface{}, Set) Vector
 	AssignI(int, interface{}, bool) Vector
 	Err() error
+	Hash() Vector
+	IsHashed() bool
+	GetHashVals() ([]int, int)
 	Copy() Vector
 	//TODO: remove after testing
 	Elem(int) (interface{}, bool)
