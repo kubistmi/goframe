@@ -1,6 +1,8 @@
 package tab
 
 import (
+	"fmt"
+
 	"github.com/kubistmi/goframe/vec"
 )
 
@@ -11,50 +13,66 @@ func (df Table) Sort(col []string) Table {
 	}
 
 	ix := df.data[col[0]].Order()
+	fmt.Println(ix)
 
-	for colI, colS := range colN[:len(colN)-1] {
-		switch v := df.data[colS].(type) {
+	for c := 0; c < len(col)-1; c++ {
+		switch v := df.data[col[c]].(type) {
 		case vec.IntVector:
 			vals, _ := v.Get()
-
 			start := 0
-			check := vals[ix[start]]
-			for i, pos := range ix {
-
-				if vals[pos] != check {
+			check := vals[ix[0]]
+			for i := 1; i < len(ix); i++ {
+				if vals[ix[i]] != check {
 					if i-start == 1 {
-						check = vals[pos]
+						check = vals[ix[i]]
 						start = i
 						continue
 					}
-					ixR := df.data[col[colI+1]].Loc(ix[start:i]).Order()
-					ixP := make([]int, len(ixR))
-					copy(ixP, ix[start:i])
-					for a, b := range ixR {
-						ix[start+b] = ixP[a]
+					newIx := df.data[col[c+1]].Loc(ix[start:i]).Order()
+					copyIx := make([]int, len(newIx))
+					copy(copyIx, ix[start:i])
+					for j, pos := range newIx {
+						ix[start+j] = copyIx[pos]
 					}
-					check = vals[pos]
+					check = vals[ix[i]]
 					start = i
+					continue
 				} else if i == len(ix)-1 {
-					ixR := df.data[col[colI+1]].Loc(ix[start:]).Order()
-					ixP := make([]int, len(ixR))
-					copy(ixP, ix[start:])
-					for a, b := range ixR {
-						ix[start+b] = ixP[a]
+					newIx := df.data[col[c+1]].Loc(ix[start:]).Order()
+					copyIx := make([]int, len(newIx))
+					copy(copyIx, ix[start:])
+					for j, pos := range newIx {
+						ix[start+pos] = copyIx[j]
 					}
 				}
 			}
 		case vec.StrVector:
 			vals, _ := v.Get()
 
-			check := vals[ix[0]]
-			for i, pos := range ix {
-				if vals[pos] != check {
-					ixR := df.data[col[colI]].Loc(ix[:i]).Order()
-					for a, b := range ixR {
-						ix[a] = b
+			start := 0
+			check := vals[ix[start]]
+			for i := 1; i < len(ix); i++ {
+				if vals[ix[i]] != check {
+					if i-start == 1 {
+						check = vals[ix[i]]
+						start = i
+						continue
 					}
-					check = vals[pos]
+					newIx := df.data[col[c+1]].Loc(ix[start:i]).Order()
+					copyIx := make([]int, len(newIx))
+					copy(copyIx, ix[start:i])
+					for j, pos := range newIx {
+						ix[start+j] = copyIx[pos]
+					}
+					check = vals[ix[i]]
+					start = i
+				} else if i == len(ix)-1 {
+					newIx := df.data[col[c+1]].Loc(ix[start:]).Order()
+					copyIx := make([]int, len(newIx))
+					copy(copyIx, ix[start:])
+					for j, pos := range newIx {
+						ix[start+pos] = copyIx[j]
+					}
 				}
 			}
 		}
