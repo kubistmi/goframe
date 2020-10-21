@@ -1,22 +1,29 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+
+	"github.com/kubistmi/goframe/vec"
+)
 
 func main() {
 
-	// vecI := NewVec([]int{0, 1, 2, 3, 4, 5})
-	// if vecI.Err() != nil {
-	// 	log.Fatal(vecI.Err())
-	// }
-	// vecS := NewVec([]string{"a", "b", "c", "b", "b", "a"})
+	vecI := vec.NewVec([]int{0, 2, 2, 5, 4, 5})
+	if vecI.Err() != nil {
+		log.Fatal(vecI.Err())
+	}
+	// vecS := vec.NewVec([]string{"a", "c", "b", "z", "b", "a"})
 	// if vecS.Err() != nil {
 	// 	log.Fatal(vecS.Err())
 	// }
-	// df, err := NewDf(map[string]Vector{"ints": vecI, "strs": vecS})
+	// df, err := tab.NewDf(map[string]vec.Vector{"ints": vecI, "strs": vecS})
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
-	// fmt.Println(df)
+	// fmt.Println(df.Sort([]string{"ints", "strs"}))
+
+	fmt.Println(vecI.Hash().GetHashVals())
 
 	// ixed := df.Group([]string{"strs"})
 	// fmt.Println(ixed)
@@ -105,7 +112,4 @@ func main() {
 	// }
 
 	// ab(a)
-
-	fmt.Println("nope")
-
 }

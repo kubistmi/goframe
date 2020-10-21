@@ -8,7 +8,10 @@ import (
 
 // Pull ...
 func (df Table) Pull(n string) vec.Vector {
-	return df.Pulln(df.inames[n])
+	if err := df.checkCols([]string{n}); err != nil {
+		return vec.NewErrVec(err)
+	}
+	return df.data[n]
 }
 
 // Pulln ...
@@ -17,41 +20,40 @@ func (df Table) Pulln(p int) vec.Vector {
 		//? should be own type
 		return vec.NewErrVec(fmt.Errorf("wrong position, maximum allowed: %v, got %v", df.size[1]-1, p))
 	}
-
-	return df.data[p]
+	return df.Pull(df.names[p])
 }
 
 // Cols ...
 func (df Table) Cols(n []string) Table {
-	ind := make([]int, 0, len(n))
-	for _, val := range n {
-		if i, ok := df.inames[val]; ok {
-			ind = append(ind, i)
-		} else {
-			return Table{err: fmt.Errorf("column '%v' not found in df.names", val)}
-		}
+
+	new := make(map[string]vec.Vector, len(n))
+
+	if err := df.checkCols(n); err != nil {
+		return Table{err: err}
 	}
-	return df.Colsn(ind)
+
+	for _, val := range n {
+		new[val] = df.data[val]
+	}
+
+	return Table{
+		data:  new,
+		names: n,
+		size:  [2]int{df.size[0], len(n)},
+	}
 }
 
 // Colsn ...
 func (df Table) Colsn(p []int) Table {
-	new := make([]vec.Vector, len(p))
-	names := make([]string, len(p))
+
+	n := make([]string, len(p))
 	for ix, val := range p {
 		if val >= df.size[1] {
 			return Table{
 				err: fmt.Errorf("wrong position, maximum allowed: %v, got %v", df.size[1]-1, p),
 			}
 		}
-		new[ix] = df.data[val]
-		names[ix] = df.names[val]
+		n[ix] = df.names[val]
 	}
-	return Table{
-		data:   new,
-		names:  names,
-		inames: inverse(names),
-		index:  df.index,
-		size:   [2]int{df.size[0], len(p)},
-	}
+	return df.Cols(n)
 }

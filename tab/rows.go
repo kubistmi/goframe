@@ -8,39 +8,32 @@ import (
 
 // Rows ...
 func (df Table) Rows(p []int) Table {
-	new := make([]vec.Vector, df.size[0])
+	new := make(map[string]vec.Vector, df.size[0])
 	for ix, val := range df.data {
 		new[ix] = val.Loc(p)
 		if new[ix].Err() != nil {
 			return Table{
-				err: fmt.Errorf("Rows: error in Loc() method in column %s : %w", df.names[ix], new[ix].Err()),
+				err: fmt.Errorf("Rows: error in Loc() method in column %s : %w", ix, new[ix].Err()),
 			}
 		}
 	}
 	return Table{
-		data:   new,
-		names:  df.names,
-		inames: df.inames,
-		size:   [2]int{len(p), df.size[1]},
+		data:  new,
+		names: df.names,
+		size:  [2]int{len(p), df.size[1]},
 	}
 }
 
 // Filter ...
 // Only AND at the moment
 func (df Table) Filter(mf map[string]interface{}) Table {
-	index := make([]int, 0, df.size[0])
-
-	inam := make(map[string]int)
-	for n := range mf {
-		inam[n] = df.inames[n]
-	}
 
 	mask := make([][]bool, 0, len(mf))
+	index := make([]int, 0, df.size[0])
 
 	for col, fun := range mf {
-		ix := inam[col]
 
-		switch v := df.data[ix].(type) {
+		switch v := df.data[col].(type) {
 		case vec.IntVector:
 			switch f := fun.(type) {
 			case func(int) bool:

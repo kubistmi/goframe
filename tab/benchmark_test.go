@@ -31,16 +31,16 @@ func BenchmarkMutate(b *testing.B) {
 	}
 }
 
-func BenchmarkMutate2(b *testing.B) {
-	for n := 0; n < b.N; n++ {
-		vals := make([]int, N)
-		for i := 0; i < N; i++ {
-			vals[i] = i
-		}
-		df, _ := NewDf(map[string]vec.Vector{"ints": vec.NewVec(vals)})
+// func BenchmarkMutate2(b *testing.B) {
+// 	for n := 0; n < b.N; n++ {
+// 		vals := make([]int, N)
+// 		for i := 0; i < N; i++ {
+// 			vals[i] = i
+// 		}
+// 		df, _ := NewDf(map[string]vec.Vector{"ints": vec.NewVec(vals)})
 
-		df.Mutate2(mut2{"ints2", []string{"ints"}, func(args ...interface{}) interface{} {
-			return args[0].(int) * args[0].(int)
-		}})
-	}
-}
+// 		df.Mutate2(mut2{"ints2", []string{"ints"}, func(args ...interface{}) interface{} {
+// 			return args[0].(int) * args[0].(int)
+// 		}})
+// 	}
+// }

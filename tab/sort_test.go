@@ -1,7 +1,6 @@
 package tab
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/kubistmi/goframe/vec"
@@ -13,7 +12,8 @@ func TestSort(t *testing.T) {
 		"sex":   vec.NewVec([]string{"m", "f", "f", "f", "m", "f", "m", "m"}),
 		"group": vec.NewVec([]int{1, 0, 2, 2, 0, 2, 1, 1}),
 	})
-	got := df.Sort([]string{"sex", "group"})
+	// got :=
+	df.Sort([]string{"sex", "group"})
 
-	fmt.Println(got)
+	// fmt.Println(got)
 }

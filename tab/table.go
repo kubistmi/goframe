@@ -21,19 +21,21 @@ func c(p ...int) []int {
 
 // Table ... -------------------------------------------------------------------
 type Table struct {
-	data   []vec.Vector
-	names  []string
-	inames map[string]int
-	index  map[int][]int
-	size   [2]int
-	err    error
+	data  map[string]vec.Vector
+	names []string
+	index struct {
+		cols []string
+		grp  map[int][]int
+	}
+	size [2]int
+	err  error
 }
 
 // NewDf ...
 func NewDf(data map[string]vec.Vector) (Table, error) {
 
 	names := make([]string, 0, len(data))
-	new := make([]vec.Vector, 0, len(data))
+
 	// check dimensions
 	var nrow int
 	for _, val := range data {
@@ -46,14 +48,12 @@ func NewDf(data map[string]vec.Vector) (Table, error) {
 			return Table{data: nil}, fmt.Errorf("incorrect dimensions in column '%v'", ix)
 		}
 		names = append(names, ix)
-		new = append(new, val)
 	}
 
 	out := Table{
-		data:   new,
-		names:  names,
-		inames: inverse(names),
-		size:   [2]int{nrow, len(data)},
+		data:  data,
+		names: names,
+		size:  [2]int{nrow, len(data)},
 	}
 	return out, nil
 }
@@ -63,12 +63,16 @@ func (df Table) Assign(name string, v vec.Vector) Table {
 	if v.Size() != df.size[0] {
 		return Table{err: fmt.Errorf("wrong vector size, table size: %v, vector size: %v", df.size[0], v.Size())}
 	}
-	if col, ok := df.inames[name]; ok {
-		df.data = append(df.data[:col], df.data[col+1:]...)
-		df.names = append(df.names[:col], df.names[col+1:]...)
-	}
-	df.data = append(df.data, v)
+	df.data[name] = v
 	df.names = append(df.names, name)
-	df.inames = inverse(df.names)
-	return (df)
+	return df
+}
+
+func (df Table) checkCols(col []string) error {
+	for _, val := range col {
+		if _, ok := df.data[val]; !ok {
+			return fmt.Errorf("Column not found in data: %v", val)
+		}
+	}
+	return nil
 }

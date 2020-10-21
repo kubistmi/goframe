@@ -1,17 +1,15 @@
 package tab
 
 // GetIndex ...
-func (df Table) GetIndex() map[int][]int {
-	return df.index
+func (df Table) GetGroups() map[int][]int {
+	return df.index.grp
 }
 
 // Group ... TESTING GROUP BY
 func (df Table) Group(cols []string) Table {
-	pos := make([]int, len(cols))
 
-	//TODO IMPLEMENT CHECKING FOR COL NAMES
-	for ix, val := range cols {
-		pos[ix] = df.inames[val]
+	if err := df.checkCols(cols); err != nil {
+		return Table{err: err}
 	}
 
 	// HASH EACH VECTOR
@@ -19,7 +17,7 @@ func (df Table) Group(cols []string) Table {
 	offset := make([]int, len(cols)+1)
 	offset[0] = 1
 
-	for j, col := range pos {
+	for j, col := range cols {
 		var off int
 		ok := df.data[col].IsHashed()
 		if !ok {
@@ -38,7 +36,11 @@ func (df Table) Group(cols []string) Table {
 		}
 		nix[chsum] = append(nix[chsum], i)
 	}
-	df.index = nix
+	df.index = struct {
+		cols []string
+		grp  map[int][]int
+	}{cols, nix}
+
 	return (df)
 
 }
