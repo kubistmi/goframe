@@ -17,10 +17,11 @@ type Vector interface {
 	IsHashed() bool
 	GetHashVals() ([]int, int)
 	Copy() Vector
-	//TODO: remove after testing
-	Elem(int) (interface{}, bool)
 	Sort() Vector
 	Order() []int
+	Group() Vector
+	//TODO: remove after testing
+	Elem(int) (interface{}, bool)
 }
 
 // NewErrVec ...

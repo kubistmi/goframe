@@ -1,9 +1,9 @@
 package vec
 
-type Groupable interface {
-	Vector
-	Group() Vector
-}
+// type Groupable interface {
+// 	Vector
+// 	Group() Vector
+// }
 
 func (v IntVector) Group() Vector {
 	groups := make(map[int][]int)
