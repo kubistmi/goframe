@@ -7,6 +7,8 @@ import "fmt"
 // Vector ...
 type Vector interface {
 	Size() int
+	Int() IntVector
+	Str() StrVector
 	//Get[T vector_type]() []T
 	GetI() (interface{}, Set)
 	Loc(p []int) Vector
