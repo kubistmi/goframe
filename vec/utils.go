@@ -2,6 +2,7 @@ package vec
 
 import "fmt"
 
+// Isin ...
 func Isin(w interface{}) interface{} {
 
 	var e struct{}

@@ -5,6 +5,7 @@ package vec
 // 	Group() Vector
 // }
 
+// Group ...
 func (v IntVector) Group() Vector {
 	groups := make(map[int][]int)
 
@@ -22,6 +23,7 @@ func (v IntVector) Group() Vector {
 	return v
 }
 
+// Group ...
 func (v StrVector) Group() Vector {
 	groups := make(map[string][]int)
 

@@ -1,5 +1,6 @@
 package vec
 
+// Hash ...
 func (v IntVector) Hash() Vector {
 
 	nhash := make(map[int]int)
@@ -21,6 +22,7 @@ func (v IntVector) Hash() Vector {
 	return v
 }
 
+// Hash ...
 func (v StrVector) Hash() Vector {
 	nhash := make(map[string]int)
 
