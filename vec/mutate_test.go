@@ -1,6 +1,7 @@
 package vec
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -9,7 +10,7 @@ func TestIntVector_Mutate(t *testing.T) {
 	type testIntVec struct {
 		name string
 		v    IntVector
-		args func(v int) int
+		args interface{}
 		want Vector
 	}
 
@@ -21,9 +22,12 @@ func TestIntVector_Mutate(t *testing.T) {
 	binsW := makeIntVec("bins")
 	binsW.obs = []int{-1, 0, -1, -1, -1, 0, 0, 0, -1}
 
+	errW := StrVector{err: fmt.Errorf("wrong function, expected: `func(int) int`, got `func(string) int`")}
+
 	tests := []testIntVec{
 		testIntVec{"square", uniq, func(v int) int { return v * v }, uniqW},
 		testIntVec{"minus one", bins, func(v int) int { return v - 1 }, binsW},
+		testIntVec{"error", bins, func(v string) int { return 5 }, errW},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -38,7 +42,7 @@ func TestStrVector_Mutate(t *testing.T) {
 	type testStrVec struct {
 		name string
 		v    StrVector
-		args func(v string) string
+		args interface{}
 		want Vector
 	}
 
@@ -50,15 +54,17 @@ func TestStrVector_Mutate(t *testing.T) {
 	binsW := makeStrVec("bins")
 	binsW.obs = []string{"a0", "a1", "a0", "a0", "a0", "a1", "a1", "a1", "a0"}
 
+	errW := StrVector{err: fmt.Errorf("wrong function, expected: `func(string) string`, got `func(string) int`")}
+
 	tests := []testStrVec{
 		testStrVec{"cut two", uniq, func(v string) string {
 			if len(v) > 2 {
 				return v[:2]
-			} else {
-				return v
 			}
+			return v
 		}, uniqW},
 		testStrVec{"add a", bins, func(v string) string { return "a" + v }, binsW},
+		testStrVec{"add a", bins, func(v string) int { return 2 }, errW},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

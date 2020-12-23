@@ -10,6 +10,9 @@ type Vector interface {
 	//Get[T vector_type]() []T
 	GetI() (interface{}, Set)
 	Loc(p []int) Vector
+	Check(interface{}) ([]bool, error)
+	Filter(interface{}) Vector
+	Mask([]bool) Vector
 	AssignM([]int, interface{}, Set) Vector
 	AssignI(int, interface{}, bool) Vector
 	Err() error
@@ -19,6 +22,7 @@ type Vector interface {
 	Copy() Vector
 	Sort() Vector
 	Order() []int
+	Mutate(interface{}) Vector
 	Group() Vector
 	//TODO: remove after testing
 	Elem(int) (interface{}, bool)

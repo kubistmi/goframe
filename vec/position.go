@@ -7,10 +7,8 @@ func (v IntVector) Loc(p []int) Vector {
 	new := make([]int, len(p))
 	nas := make(Set)
 	for ix, val := range p {
-		if val >= v.Size() {
-			return IntVector{
-				err: fmt.Errorf("wrong position, maximum allowed: %v, got %v", v.Size()-1, val),
-			}
+		if val >= v.Size() || val < 0 {
+			return NewErrVec(fmt.Errorf("wrong position, maximum allowed: %v, got %v", v.Size()-1, val))
 		}
 		new[ix] = v.obs[val]
 		if v.na.Get(val) {
@@ -26,14 +24,11 @@ func (v IntVector) Loc(p []int) Vector {
 
 // Loc ...
 func (v StrVector) Loc(p []int) Vector {
-
 	new := make([]string, len(p))
-	nas := make(Set, len(p))
+	nas := make(Set)
 	for ix, val := range p {
-		if val >= v.Size() {
-			return StrVector{
-				err: fmt.Errorf("wrong position, maximum allowed: %v, got %v", v.Size()-1, val),
-			}
+		if val >= v.Size() || val < 0 {
+			return NewErrVec(fmt.Errorf("wrong position, maximum allowed: %v, got %v", v.Size()-1, val))
 		}
 		new[ix] = v.obs[val]
 		if v.na.Get(val) {
@@ -47,36 +42,48 @@ func (v StrVector) Loc(p []int) Vector {
 	}
 }
 
-// Mask ...
-func (v IntVector) Mask(f func(v int) bool) []bool {
+// Check ...
+func (v IntVector) Check(f interface{}) ([]bool, error) {
+	fun, ok := f.(func(int) bool)
+	if !ok {
+		return nil, fmt.Errorf("wrong function, expected: `func(int) bool`, got `%T`", f)
+	}
+
 	new := make([]bool, v.Size())
 	for ix, val := range v.obs {
 		if v.na.Get(ix) {
 			new[ix] = false
 		} else {
-			new[ix] = f(val)
+			new[ix] = fun(val)
 		}
 	}
-	return new
+	return new, nil
 }
 
-// Mask ...
-func (v StrVector) Mask(f func(v string) bool) []bool {
-	new := make([]bool, v.Size())
+// Check ...
+func (v StrVector) Check(f interface{}) ([]bool, error) {
+	fun, ok := f.(func(string) bool)
+	if !ok {
+		return nil, fmt.Errorf("wrong function, expected: `func(string) bool`, got `%T`", f)
+	}
 
+	new := make([]bool, v.Size())
 	for ix, val := range v.obs {
 		if v.na.Get(ix) {
 			new[ix] = false
 		} else {
-			new[ix] = f(val)
+			new[ix] = fun(val)
 		}
 	}
-	return new
+	return new, nil
 }
 
 // Filter ...
-func (v IntVector) Filter(f func(v int) bool) Vector {
-	locb := v.Mask(f)
+func (v IntVector) Filter(f interface{}) Vector {
+	locb, err := v.Check(f)
+	if err != nil {
+		return NewErrVec(fmt.Errorf("error in Check: %w", err))
+	}
 	new := make([]int, 0, v.Size())
 	for ix, val := range locb {
 		if val {
@@ -87,8 +94,11 @@ func (v IntVector) Filter(f func(v int) bool) Vector {
 }
 
 // Filter ...
-func (v StrVector) Filter(f func(v string) bool) Vector {
-	locb := v.Mask(f)
+func (v StrVector) Filter(f interface{}) Vector {
+	locb, err := v.Check(f)
+	if err != nil {
+		return NewErrVec(fmt.Errorf("error in Check: %w", err))
+	}
 	new := make([]int, 0, v.Size())
 	for ix, val := range locb {
 		if val {
@@ -96,4 +106,32 @@ func (v StrVector) Filter(f func(v string) bool) Vector {
 		}
 	}
 	return v.Loc(new)
+}
+
+// Mask ...
+func (v IntVector) Mask(c []bool) Vector {
+	if len(c) != v.Size() {
+		return NewErrVec(fmt.Errorf("size of boolean slice does not match the size of Vector, expected: %v, got: %v", v.Size(), len(c)))
+	}
+	pos := make([]int, 0, v.Size())
+	for ix, val := range c {
+		if val {
+			pos = append(pos, ix)
+		}
+	}
+	return v.Loc(pos)
+}
+
+// Mask ...
+func (v StrVector) Mask(c []bool) Vector {
+	if len(c) != v.Size() {
+		return NewErrVec(fmt.Errorf("size of boolean slice does not match the size of Vector, expected: %v, got: %v", v.Size(), len(c)))
+	}
+	pos := make([]int, 0, v.Size())
+	for ix, val := range c {
+		if val {
+			pos = append(pos, ix)
+		}
+	}
+	return v.Loc(pos)
 }
