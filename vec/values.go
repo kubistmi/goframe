@@ -134,16 +134,6 @@ func (v StrVector) Assign(p int, val string, na bool) StrVector {
 	return v
 }
 
-// Err  ...
-func (v IntVector) Err() error {
-	return v.err
-}
-
-// Err  ...
-func (v StrVector) Err() error {
-	return v.err
-}
-
 // Copy ...
 func (v IntVector) Copy() Vector {
 

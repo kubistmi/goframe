@@ -1,5 +1,10 @@
 package vec
 
+import (
+	"fmt"
+	"strconv"
+)
+
 // IntVector ... ---------------------------------------------------------------
 type IntVector struct {
 	obs  []int
@@ -35,4 +40,33 @@ type StrVector struct {
 // Size ...
 func (v StrVector) Size() int {
 	return v.size
+}
+
+// ToStr ...
+func (v IntVector) ToStr() StrVector {
+
+	if v.Err() != nil {
+		return StrVector{
+			err: fmt.Errorf("ToStr - Vector already contains an error: %w", v.Err()),
+		}
+	}
+
+	data := make([]string, v.size)
+
+	for ix, val := range v.obs {
+		data[ix] = strconv.Itoa(val)
+	}
+
+	return StrVector{
+		obs:  data,
+		na:   v.na,
+		size: v.size,
+	}
+}
+
+// ToStr ...
+func (v StrVector) ToStr() StrVector {
+
+	return v
+
 }

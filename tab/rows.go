@@ -6,6 +6,15 @@ import (
 	"github.com/kubistmi/goframe/vec"
 )
 
+func (df Table) Head(n int) Table {
+	p := make([]int, n)
+	for i := 0; i < n; i++ {
+		p[i] = i
+	}
+
+	return df.Rows(p)
+}
+
 // Rows ...
 func (df Table) Rows(p []int) Table {
 	new := make(map[string]vec.Vector, df.size[0])

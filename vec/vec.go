@@ -28,6 +28,7 @@ type Vector interface {
 	Group() Vector
 	//TODO: remove after testing
 	Elem(int) (interface{}, bool)
+	ToStr() StrVector
 }
 
 // NewErrVec ...
