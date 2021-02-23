@@ -31,3 +31,11 @@ func (s Set) Del(i int) Set {
 	delete(s, i)
 	return s
 }
+
+// Extend adds element of a selected Set.
+func (s Set) Extend(c Set) Set {
+	for ix := range c {
+		s.Set(ix)
+	}
+	return s
+}
