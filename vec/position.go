@@ -44,36 +44,33 @@ func (v StrVector) Loc(p []int) Vector {
 
 // Check ...
 func (v IntVector) Check(f interface{}) ([]bool, error) {
-	fun, ok := f.(func(int) bool)
+	fun, ok := f.(func(int, bool) bool)
 	if !ok {
-		return nil, fmt.Errorf("wrong function, expected: `func(int) bool`, got `%T`", f)
+		if err, ok := f.(error); ok {
+			return nil, fmt.Errorf("wrong function, expected: `func(int) bool`, got: `%w`", err)
+		}
+		return nil, fmt.Errorf("wrong function, expected: `func(int) bool`, got: `%T`", f)
 	}
-
 	new := make([]bool, v.Size())
 	for ix, val := range v.obs {
-		if v.na.Get(ix) {
-			new[ix] = false
-		} else {
-			new[ix] = fun(val)
-		}
+		new[ix] = fun(val, v.na.Get(ix))
 	}
 	return new, nil
 }
 
 // Check ...
 func (v StrVector) Check(f interface{}) ([]bool, error) {
-	fun, ok := f.(func(string) bool)
+	fun, ok := f.(func(string, bool) bool)
 	if !ok {
-		return nil, fmt.Errorf("wrong function, expected: `func(string) bool`, got `%T`", f)
+		if err, ok := f.(error); ok {
+			return nil, fmt.Errorf("wrong function, expected: `func(string) bool`, got: `%w`", err)
+		}
+		return nil, fmt.Errorf("wrong function, expected: `func(string) bool`, got: `%T`", f)
 	}
 
 	new := make([]bool, v.Size())
 	for ix, val := range v.obs {
-		if v.na.Get(ix) {
-			new[ix] = false
-		} else {
-			new[ix] = fun(val)
-		}
+		new[ix] = fun(val, v.na.Get(ix))
 	}
 	return new, nil
 }

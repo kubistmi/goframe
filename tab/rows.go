@@ -47,11 +47,13 @@ func (df Table) Filter(maf ...MapFun) Table {
 		switch v := df.data[val.col].(type) {
 		case vec.IntVector:
 			switch f := val.fun.(type) {
+			case func(int, bool) bool:
+				out, err := v.Check(f)
 				if err != nil {
 					return Table{err: fmt.Errorf("error in Check() method in columns %s : %w", val.col, err)}
 
 				}
-				mask = append(mask, val)
+				mask = append(mask, out)
 			default:
 				return Table{
 					err: fmt.Errorf("wrong function definition, expected func(int) bool, got %T", f),
@@ -59,11 +61,13 @@ func (df Table) Filter(maf ...MapFun) Table {
 			}
 		case vec.StrVector:
 			switch f := val.fun.(type) {
+			case func(string, bool) bool:
+				out, err := v.Check(f)
 				if err != nil {
 					return Table{err: fmt.Errorf("error in Check() method in columns %s : %w", val.col, err)}
 
 				}
-				mask = append(mask, val)
+				mask = append(mask, out)
 			default:
 				return Table{
 					err: fmt.Errorf("wrong function definition, expected func(int) bool, got %T", f),

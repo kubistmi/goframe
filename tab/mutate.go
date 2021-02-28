@@ -14,6 +14,7 @@ func (df Table) Mutate(maf ...MapFun) Table {
 		switch v := df.data[val.cols[0]].(type) {
 		case vec.IntVector:
 			switch f := val.fun.(type) {
+			case func(int, bool) (int, bool):
 				if _, ok := df.data[val.col]; !ok {
 					df.names = append(df.names, val.col)
 				}
@@ -25,6 +26,7 @@ func (df Table) Mutate(maf ...MapFun) Table {
 			}
 		case vec.StrVector:
 			switch f := val.fun.(type) {
+			case func(string, bool) (string, bool):
 				if _, ok := df.data[val.col]; !ok {
 					df.names = append(df.names, val.col)
 				}
@@ -37,12 +39,6 @@ func (df Table) Mutate(maf ...MapFun) Table {
 		}
 	}
 	return df
-}
-
-type mutS struct {
-	new string
-	old []string
-	fun interface{}
 }
 
 // MutateM ...
