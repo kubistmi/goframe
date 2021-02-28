@@ -25,9 +25,7 @@ func BenchmarkMutate(b *testing.B) {
 			vals[i] = i
 		}
 		df, _ := NewDf(map[string]vec.Vector{"ints": vec.NewVec(vals)})
-		df.Mutate(mut{"ints2", "ints", func(a int) int {
-			return a * a
-		}})
+		df.Mutate(MapF("ints2", func(a int) int { return a * a }, "ints"))
 	}
 }
 

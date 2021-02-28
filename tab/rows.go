@@ -6,6 +6,7 @@ import (
 	"github.com/kubistmi/goframe/vec"
 )
 
+// Head ...
 func (df Table) Head(n int) Table {
 	p := make([]int, n)
 	for i := 0; i < n; i++ {
@@ -34,21 +35,20 @@ func (df Table) Rows(p []int) Table {
 }
 
 // Filter ...
-// Only AND at the moment
-func (df Table) Filter(mf map[string]interface{}) Table {
+// Only OR at the moment
+func (df Table) Filter(maf ...MapFun) Table {
+	mf := unwrapMap(maf)
 
 	mask := make([][]bool, 0, len(mf))
 	index := make([]int, 0, df.size[0])
 
-	for col, fun := range mf {
+	for _, val := range mf {
 
-		switch v := df.data[col].(type) {
+		switch v := df.data[val.col].(type) {
 		case vec.IntVector:
-			switch f := fun.(type) {
-			case func(int) bool:
-				val, err := v.Check(f)
+			switch f := val.fun.(type) {
 				if err != nil {
-					return Table{err: fmt.Errorf("error in Check() method in columns %s : %w", col, err)}
+					return Table{err: fmt.Errorf("error in Check() method in columns %s : %w", val.col, err)}
 
 				}
 				mask = append(mask, val)
@@ -58,11 +58,9 @@ func (df Table) Filter(mf map[string]interface{}) Table {
 				}
 			}
 		case vec.StrVector:
-			switch f := fun.(type) {
-			case func(string) bool:
-				val, err := v.Check(f)
+			switch f := val.fun.(type) {
 				if err != nil {
-					return Table{err: fmt.Errorf("error in Check() method in columns %s : %w", col, err)}
+					return Table{err: fmt.Errorf("error in Check() method in columns %s : %w", val.col, err)}
 
 				}
 				mask = append(mask, val)
@@ -78,7 +76,7 @@ func (df Table) Filter(mf map[string]interface{}) Table {
 	for i := 0; i < df.size[0]; i++ {
 		y := true
 		for j := 0; j < len(mf); j++ {
-			y = y && mask[j][i]
+			y = y || mask[j][i]
 		}
 		if y {
 			index = append(index, i)
