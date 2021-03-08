@@ -1,6 +1,10 @@
 package vec
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/kubistmi/goframe/utils"
+)
 
 // Loc ...
 func (v IntVector) Loc(p []int) Vector {
@@ -8,7 +12,7 @@ func (v IntVector) Loc(p []int) Vector {
 	nas := make(Set)
 	for ix, val := range p {
 		if val >= v.Size() || val < 0 {
-			return NewErrVec(fmt.Errorf("wrong position, maximum allowed: %v, got %v", v.Size()-1, val))
+			return v.setError(fmt.Errorf("%w wrong position `p`, maximum allowed: %v, got %v", utils.ErrParamVal, v.Size()-1, val))
 		}
 		new[ix] = v.obs[val]
 		if v.na.Get(val) {
@@ -28,7 +32,7 @@ func (v StrVector) Loc(p []int) Vector {
 	nas := make(Set)
 	for ix, val := range p {
 		if val >= v.Size() || val < 0 {
-			return NewErrVec(fmt.Errorf("wrong position, maximum allowed: %v, got %v", v.Size()-1, val))
+			return v.setError(fmt.Errorf("%w wrong position `p`, maximum allowed: %v, got %v", utils.ErrParamVal, v.Size()-1, val))
 		}
 		new[ix] = v.obs[val]
 		if v.na.Get(val) {
@@ -47,9 +51,9 @@ func (v IntVector) Check(f interface{}) ([]bool, error) {
 	fun, ok := f.(func(int, bool) bool)
 	if !ok {
 		if err, ok := f.(error); ok {
-			return nil, fmt.Errorf("wrong function, expected: `func(int) bool`, got: `%w`", err)
+			return nil, fmt.Errorf("interface `f` contains error: %w", err)
 		}
-		return nil, fmt.Errorf("wrong function, expected: `func(int) bool`, got: `%T`", f)
+		return nil, fmt.Errorf("%w parameter f, expected: `func(int) bool`, got `%T`", utils.ErrParamType, f)
 	}
 	new := make([]bool, v.Size())
 	for ix, val := range v.obs {
@@ -63,9 +67,9 @@ func (v StrVector) Check(f interface{}) ([]bool, error) {
 	fun, ok := f.(func(string, bool) bool)
 	if !ok {
 		if err, ok := f.(error); ok {
-			return nil, fmt.Errorf("wrong function, expected: `func(string) bool`, got: `%w`", err)
+			return nil, fmt.Errorf("interface `f` contains error: %w", err)
 		}
-		return nil, fmt.Errorf("wrong function, expected: `func(string) bool`, got: `%T`", f)
+		return nil, fmt.Errorf("%w parameter f, expected: `func(string) bool`, got `%T`", utils.ErrParamType, f)
 	}
 
 	new := make([]bool, v.Size())
@@ -108,7 +112,7 @@ func (v StrVector) Filter(f interface{}) Vector {
 // Mask ...
 func (v IntVector) Mask(c []bool) Vector {
 	if len(c) != v.Size() {
-		return NewErrVec(fmt.Errorf("size of boolean slice does not match the size of Vector, expected: %v, got: %v", v.Size(), len(c)))
+		return v.setError(fmt.Errorf("%w size of slice `c` != size of Vector `v`, expected: %v, got: %v", utils.ErrParamVal, v.Size(), len(c)))
 	}
 	pos := make([]int, 0, v.Size())
 	for ix, val := range c {
@@ -122,7 +126,7 @@ func (v IntVector) Mask(c []bool) Vector {
 // Mask ...
 func (v StrVector) Mask(c []bool) Vector {
 	if len(c) != v.Size() {
-		return NewErrVec(fmt.Errorf("size of boolean slice does not match the size of Vector, expected: %v, got: %v", v.Size(), len(c)))
+		return v.setError(fmt.Errorf("%w size of slice `c` != size of Vector `v`, expected: %v, got: %v", utils.ErrParamVal, v.Size(), len(c)))
 	}
 	pos := make([]int, 0, v.Size())
 	for ix, val := range c {

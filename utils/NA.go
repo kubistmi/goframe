@@ -40,7 +40,7 @@ func SkipNA(f interface{}) interface{} {
 			return fun(v), false
 		}
 	}
-	return fmt.Errorf("undefined function specification")
+	return fmt.Errorf("%w parameter f, expected: `func(T) T` OR `func(T) bool` for T = `string` / `int`, got: `%T`", ErrParamType, f)
 }
 
 //! I am so ready for the generics!

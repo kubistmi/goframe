@@ -3,16 +3,28 @@ package vec
 import (
 	"fmt"
 	"strings"
+
+	"github.com/kubistmi/goframe/utils"
 )
 
 // Str ...
 func (v IntVector) Str() StrVector {
-	return StrVector{err: fmt.Errorf("cannot type switch, expected: `StrVector`, got: %T", v)}
+	return v.setStrError(fmt.Errorf("%w cant type switch, expected: `StrVector`, got: `%T`", utils.ErrParamType, v))
 }
 
 // Str ...
 func (v StrVector) Str() StrVector {
 	return v
+}
+
+// Int ...
+func (v IntVector) Int() IntVector {
+	return v
+}
+
+// Int ...
+func (v StrVector) Int() IntVector {
+	return v.setIntError(fmt.Errorf("%w cant type switch, expected: `IntVector`, got: `%T`", utils.ErrParamType, v))
 }
 
 // JoinStr ...
@@ -31,7 +43,7 @@ func (v StrVector) JoinStr(s interface{}) StrVector {
 		}
 	case []string:
 		if len(s) != v.Size() {
-			return StrVector{err: fmt.Errorf("wrong slice size, expected: %v, got %v", v.Size(), len(s))}
+			return v.setStrError(fmt.Errorf("%w wrong size of slice `s`, expected: `%v`, got `%v`", utils.ErrParamVal, v.Size(), len(s)))
 		}
 		for ix, val := range v.obs {
 			if v.na.Get(ix) {
@@ -42,7 +54,7 @@ func (v StrVector) JoinStr(s interface{}) StrVector {
 		}
 	case StrVector:
 		if s.Size() != v.Size() {
-			return StrVector{err: fmt.Errorf("wrong IntVector size, expected: %v, got %v", v.Size(), s.Size())}
+			return v.setStrError(fmt.Errorf("%w wrong size of IntVector `s`, expected: `%v`, got `%v`", utils.ErrParamVal, v.Size(), s.Size()))
 		}
 		for ix, val := range v.obs {
 			if v.na.Get(ix) || s.na.Get(ix) {
@@ -68,8 +80,8 @@ func (v StrVector) Rep(s interface{}) StrVector {
 
 	switch s := s.(type) {
 	case int:
-		if s < 0 {
-			return StrVector{err: fmt.Errorf("negative number of repeats, got %v", s)}
+		if s <= 0 {
+			return v.setStrError(fmt.Errorf("%w non-positive number of repeats `s`, expected `s > 0`, got %v", utils.ErrParamVal, s))
 		}
 		for ix, val := range v.obs {
 			if v.na.Get(ix) {
@@ -80,21 +92,21 @@ func (v StrVector) Rep(s interface{}) StrVector {
 		}
 	case []int:
 		if len(s) != v.Size() {
-			return StrVector{err: fmt.Errorf("wrong slice size, expected: %v, got %v", v.Size(), len(s))}
+			return v.setStrError(fmt.Errorf("%w wrong size of slice `s`, expected: `%v`, got `%v`", utils.ErrParamVal, v.Size(), len(s)))
 		}
 		for ix, val := range v.obs {
 			if v.na.Get(ix) {
 				new[ix] = ""
 			} else {
-				if s[ix] < 0 {
-					return StrVector{err: fmt.Errorf("negative number of repeats at position %v", ix)}
+				if s[ix] <= 0 {
+					return v.setStrError(fmt.Errorf("%w non-positive number of repeats `s` at position %v, expected `s > 0`, got %v", utils.ErrParamVal, ix, s[ix]))
 				}
 				new[ix] = strings.Repeat(val, s[ix])
 			}
 		}
 	case IntVector:
 		if s.Size() != v.Size() {
-			return StrVector{err: fmt.Errorf("wrong IntVector size, expected: %v, got %v", v.Size(), s.Size())}
+			return v.setStrError(fmt.Errorf("%w wrong size of IntVector `s`, expected: `%v`, got `%v`", utils.ErrParamVal, v.Size(), s.Size()))
 		}
 		for ix, val := range v.obs {
 			if v.na.Get(ix) || s.na.Get(ix) {
@@ -102,7 +114,7 @@ func (v StrVector) Rep(s interface{}) StrVector {
 				new[ix] = ""
 			} else {
 				if s.obs[ix] < 0 {
-					return StrVector{err: fmt.Errorf("negative number of repeats at position %v", ix)}
+					return v.setStrError(fmt.Errorf("%w non-positive number of repeats `s` at position %v, expected `s > 0`, got %v", utils.ErrParamVal, ix, s.obs[ix]))
 				}
 				new[ix] = strings.Repeat(val, s.obs[ix])
 			}
@@ -128,28 +140,28 @@ func (v StrVector) Sub(s interface{}) StrVector {
 				new[ix] = ""
 			} else {
 				if s[0] < 0 || s[1] <= s[0] || s[1] > len(val) {
-					return StrVector{err: fmt.Errorf("wrong sub specification, string size: %v, got [%v, %v]", len(val), s[0], s[1])}
+					return v.setStrError(fmt.Errorf("%w wrong range specified in `s`, string size: `%v`, got `[%v, %v]`", utils.ErrParamVal, len(val), s[0], s[1]))
 				}
 				new[ix] = val[s[0]:s[1]]
 			}
 		}
 	case [][2]int:
 		if len(s) != v.Size() {
-			return StrVector{err: fmt.Errorf("wrong slice size, expected: %v, got %v", v.Size(), len(s))}
+			return v.setStrError(fmt.Errorf("%w wrong size of slice `s`, expected: `%v`, got `%v`", utils.ErrParamVal, v.Size(), len(s)))
 		}
 		for ix, val := range v.obs {
 			if v.na.Get(ix) {
 				new[ix] = ""
 			} else {
 				if s[ix][0] < 0 || s[ix][1] <= s[ix][0] || s[ix][1] > len(val) {
-					return StrVector{err: fmt.Errorf("wrong sub specification, string size: %v, got [%v, %v]", len(val), s[ix][0], s[ix][1])}
+					return v.setStrError(fmt.Errorf("%w wrong range specified in `s`, string size: `%v`, got `[%v, %v]`", utils.ErrParamVal, len(val), s[ix][0], s[ix][1]))
 				}
 				new[ix] = val[s[ix][0]:s[ix][1]]
 			}
 		}
 	case IntVector:
 		if s.Size() != v.Size() {
-			return StrVector{err: fmt.Errorf("wrong IntVector size, expected: %v, got %v", v.Size(), s.Size())}
+			return v.setStrError(fmt.Errorf("%w wrong size of IntVector `s`, expected: `%v`, got `%v`", utils.ErrParamVal, v.Size(), s.Size()))
 		}
 		for ix, val := range v.obs {
 			if v.na.Get(ix) || s.na.Get(ix) {
@@ -166,16 +178,6 @@ func (v StrVector) Sub(s interface{}) StrVector {
 		na:   na,
 		size: v.Size(),
 	}
-}
-
-// Int ...
-func (v IntVector) Int() IntVector {
-	return v
-}
-
-// Int ...
-func (v StrVector) Int() IntVector {
-	return IntVector{err: fmt.Errorf("cannot type switch, expected: `IntVector`, got: %T", v)}
 }
 
 // Add ...
@@ -213,7 +215,7 @@ func runIntOp(v IntVector, s interface{}, kind string) IntVector {
 		}
 	case []int:
 		if len(s) != v.Size() {
-			return IntVector{err: fmt.Errorf("wrong slice size, expected: %v, got %v", v.Size(), len(s))}
+			return v.setIntError(fmt.Errorf("%w wrong size of slice `s`, expected: `%v`, got `%v`", utils.ErrParamVal, v.Size(), len(s)))
 		}
 		for ix, val := range v.obs {
 			if v.na.Get(ix) {
@@ -224,7 +226,7 @@ func runIntOp(v IntVector, s interface{}, kind string) IntVector {
 		}
 	case IntVector:
 		if s.Size() != v.Size() {
-			return IntVector{err: fmt.Errorf("wrong IntVector size, expected: %v, got %v", v.Size(), s.Size())}
+			return v.setIntError(fmt.Errorf("%w wrong size of IntVector `s`, expected: `%v`, got `%v`", utils.ErrParamVal, v.Size(), s.Size()))
 		}
 		for ix, val := range v.obs {
 			if v.na.Get(ix) || s.na.Get(ix) {

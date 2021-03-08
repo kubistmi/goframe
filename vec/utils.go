@@ -1,6 +1,10 @@
 package vec
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/kubistmi/goframe/utils"
+)
 
 // Isin ...
 func Isin(w interface{}) interface{} {
@@ -29,7 +33,7 @@ func Isin(w interface{}) interface{} {
 		}
 	}
 
-	return fmt.Errorf("wrong parameter type, expected: []int/[]string, got: %T", w)
+	return fmt.Errorf("%w parameter w, expected: `[]int` / `[]string`, got: %T", utils.ErrParamType, w)
 
 }
 

@@ -2,6 +2,8 @@ package vec
 
 import (
 	"fmt"
+
+	"github.com/kubistmi/goframe/utils"
 )
 
 // Mutate ...
@@ -9,9 +11,9 @@ func (v IntVector) Mutate(f interface{}) Vector {
 	fun, ok := f.(func(int, bool) (int, bool))
 	if !ok {
 		if err, ok := f.(error); ok {
-			return IntVector{err: fmt.Errorf("wrong function, expected: `func(int) int`, got: `%w`", err)}
+			return v.setError(fmt.Errorf("interface `f` contains error: %w", err))
 		}
-		return IntVector{err: fmt.Errorf("wrong function, expected: `func(int) int`, got `%T`", f)}
+		return v.setError(fmt.Errorf("%w parameter f, expected: `func(int) int`, got `%T`", utils.ErrParamType, f))
 	}
 
 	new := make([]int, v.Size())
@@ -36,9 +38,9 @@ func (v StrVector) Mutate(f interface{}) Vector {
 	fun, ok := f.(func(string, bool) (string, bool))
 	if !ok {
 		if err, ok := f.(error); ok {
-			return StrVector{err: fmt.Errorf("wrong function, expected: `func(string) string`, got: `%w`", err)}
+			return v.setError(fmt.Errorf("interface `f` contains error: %w", err))
 		}
-		return StrVector{err: fmt.Errorf("wrong function, expected: `func(string) string`, got `%T`", f)}
+		return v.setError(fmt.Errorf("%w parameter f, expected: `func(string) string`, got `%T`", utils.ErrParamType, f))
 	}
 
 	new := make([]string, v.Size())

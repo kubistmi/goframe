@@ -2,7 +2,11 @@
 // each Table is build.
 package vec
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/kubistmi/goframe/utils"
+)
 
 // Vector ...
 type Vector interface {
@@ -15,12 +19,12 @@ type Vector interface {
 	Check(interface{}) ([]bool, error)
 	Filter(interface{}) Vector
 	Mask([]bool) Vector
-	AssignM([]int, interface{}, Set) Vector
-	AssignI(int, interface{}, bool) Vector
 	Err() error
+	setError(error) Vector
 	Hash() Vector
 	IsHashed() bool
 	GetHashVals() ([]int, int)
+	SetHash(Vector) Vector
 	Copy() Vector
 	Sort() Vector
 	Order() []int
@@ -68,7 +72,7 @@ func NewVec(data interface{}, nas ...Set) Vector {
 		}
 	default:
 		return StrVector{
-			err: fmt.Errorf("wrong data type, expected []int or []string, got %T", t),
+			err: fmt.Errorf("%w wrong data type, expected `[]int` / `[]string`, got `%T`", utils.ErrParamType, t),
 		}
 	}
 }

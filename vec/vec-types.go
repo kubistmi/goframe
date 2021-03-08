@@ -3,6 +3,8 @@ package vec
 import (
 	"fmt"
 	"strconv"
+
+	"github.com/kubistmi/goframe/utils"
 )
 
 // IntVector ... ---------------------------------------------------------------
@@ -16,11 +18,6 @@ type IntVector struct {
 	index map[int][]int
 	size  int
 	err   error
-}
-
-// Size ...
-func (v IntVector) Size() int {
-	return v.size
 }
 
 // StrVector ... ---------------------------------------------------------------
@@ -38,6 +35,11 @@ type StrVector struct {
 }
 
 // Size ...
+func (v IntVector) Size() int {
+	return v.size
+}
+
+// Size ...
 func (v StrVector) Size() int {
 	return v.size
 }
@@ -47,7 +49,7 @@ func (v IntVector) ToStr() StrVector {
 
 	if v.Err() != nil {
 		return StrVector{
-			err: fmt.Errorf("ToStr - Vector already contains an error: %w", v.Err()),
+			err: fmt.Errorf("ToStr - %w %w", utils.ErrAlreadyErr, v.Err()),
 		}
 	}
 
