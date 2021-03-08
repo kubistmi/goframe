@@ -31,6 +31,11 @@ type Table struct {
 	err  error
 }
 
+func (df Table) ResetErr() Table {
+	df.err = nil
+	return df
+}
+
 // NewDf ...
 func NewDf(data map[string]vec.Vector) (Table, error) {
 

@@ -42,3 +42,23 @@ func SkipNA(f interface{}) interface{} {
 	}
 	return fmt.Errorf("undefined function specification")
 }
+
+//! I am so ready for the generics!
+// func SkipNA[I, O any](f func(I) O) func(I, bool) (O, bool) {
+
+// 	switch (interface{})(f).(type) {
+// 	case func(I) I:
+// 		fmt.Println("mutate")
+
+// 	case func(I) bool:
+// 		fmt.Println("check")
+// 	}
+
+// 	return func(d I, na bool) (O, bool) {
+// 		if na {
+// 			var e O
+// 			return e, true
+// 		}
+// 		return f(d), false
+// 	}
+// }

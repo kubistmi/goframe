@@ -26,11 +26,11 @@ func (df Table) Pulln(p int) vec.Vector {
 // Cols ...
 func (df Table) Cols(n []string) Table {
 
-	new := make(map[string]vec.Vector, len(n))
-
 	if err := df.checkCols(n); err != nil {
 		return Table{err: err}
 	}
+
+	new := make(map[string]vec.Vector, len(n))
 
 	for _, val := range n {
 		new[val] = df.data[val]
