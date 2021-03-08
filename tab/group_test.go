@@ -25,11 +25,11 @@ func TestGroup(t *testing.T) {
 	})
 	grDf := df.Group([]string{"sex", "group"})
 	got := grDf.GetGroups()
-	want := map[int][]int{0: []int{0, 6, 7}, 2: []int{4}, 3: []int{1}, 5: []int{2, 3, 5}}
+	want := map[int][]int{4: []int{0, 6, 7}, 7: []int{4}, 8: []int{1}, 11: []int{2, 3, 5}}
 
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("Expected: %#v, got: %#v", want, got)
 	}
 
-	fmt.Println(grDf.Agg(map[string]interface{}{"age": meanAge}))
+	fmt.Println(grDf.Agg(MapF("age", meanAge)))
 }

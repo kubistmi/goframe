@@ -47,17 +47,18 @@ func (df Table) Group(cols []string) Table {
 }
 
 // Agg ...
-func (df Table) Agg(mapf map[string]interface{}) Table {
+func (df Table) Agg(maf ...MapFun) Table {
+	mf := unwrapMap(maf)
 
-	cols := make([]string, 0, len(mapf))
-	for c := range mapf {
-		cols = append(cols, c)
+	cols := make([]string, 0, len(mf))
+	for _, c := range mf {
+		cols = append(cols, c.col)
 	}
 	if err := df.checkCols(cols); err != nil {
 		return Table{err: err}
 	}
 
-	new := make(map[string]vec.Vector, len(mapf)+len(df.index.cols))
+	new := make(map[string]vec.Vector, len(mf)+len(df.index.cols))
 
 	grps := make([]int, 0, len(df.index.grp))
 	ix := make([]int, 0, len(grps))
@@ -71,24 +72,24 @@ func (df Table) Agg(mapf map[string]interface{}) Table {
 		new[n] = dfgrp.data[n]
 	}
 
-	cols = make([]string, len(df.index.cols), len(mapf)+len(df.index.cols))
+	cols = make([]string, len(df.index.cols), len(mf)+len(df.index.cols))
 	copy(cols, df.index.cols)
-	for col, fun := range mapf {
-		switch f := fun.(type) {
+	for _, val := range mf {
+		switch f := val.fun.(type) {
 		case func(vec.Vector) int:
 			aggval := make([]int, len(grps))
 			for i, g := range grps {
-				aggval[i] = f(df.data[col].Loc(df.index.grp[g]))
+				aggval[i] = f(df.data[val.col].Loc(df.index.grp[g]))
 			}
-			new[col] = vec.NewVec(aggval)
-			cols = append(cols, col)
+			new[val.col] = vec.NewVec(aggval)
+			cols = append(cols, val.col)
 		case func(...vec.Vector) string:
 			aggval := make([]string, len(grps))
 			for i, g := range grps {
-				aggval[i] = f(df.data[col].Loc(df.index.grp[g]))
+				aggval[i] = f(df.data[val.col].Loc(df.index.grp[g]))
 			}
-			new[col] = vec.NewVec(aggval)
-			cols = append(cols, col)
+			new[val.col] = vec.NewVec(aggval)
+			cols = append(cols, val.col)
 		}
 	}
 
