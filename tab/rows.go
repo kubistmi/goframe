@@ -8,8 +8,9 @@ import (
 
 // Head ...
 func (df Table) Head(n int) Table {
-	p := make([]int, n)
-	for i := 0; i < n; i++ {
+	max := lim(false, n, df.size[0])
+	p := make([]int, max)
+	for i := 0; i < max; i++ {
 		p[i] = i
 	}
 

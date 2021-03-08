@@ -8,10 +8,6 @@ import (
 	"github.com/kubistmi/goframe/vec"
 )
 
-func (df Table) printRecord(row int) string {
-	return ""
-}
-
 func nchar(s string) int {
 	return utf8.RuneCountInString(s)
 }
@@ -43,7 +39,6 @@ func pad(s string, n int) string {
 		sb.WriteString(" ")
 		srun := []rune(s)[:(n - 5)]
 		sb.WriteString(string(srun))
-		// sb.WriteString(s[:(n - 5)])
 		sb.WriteString("... ")
 	} else {
 		numspace := n - nc
@@ -63,8 +58,9 @@ func pad(s string, n int) string {
 
 // Print ...
 func (df Table) Print() string {
-	colmax := 20
-	dfV := df.Head(10)
+	n := lim(false, 10, df.size[0])
+	colmax := 60
+	dfV := df.Head(n)
 	colLen := make(map[string]int, len(df.names))
 	strVecs := make(map[string][]string, len(dfV.names))
 	strNas := make(map[string]vec.Set, len(dfV.names))
@@ -72,19 +68,19 @@ func (df Table) Print() string {
 	var sepb strings.Builder
 
 	for _, val := range df.names {
-		colLen[val] = lim(true, lim(false, nchar(val), colmax), 10)
+		colLen[val] = lim(true, lim(false, nchar(val)+5, colmax), 10)
 		strVecs[val], strNas[val] = dfV.data[val].ToStr().Get()
 	}
 
 	for _, col := range df.names {
-		for i := 0; i < 10; i++ {
+		for i := 0; i < n; i++ {
 			colLen[col] = lim(true, colLen[col], lim(false, nchar(strVecs[col][i]), colmax))
 		}
 	}
 
-	width := 3
+	width := 0
 	for _, l := range colLen {
-		width = width + l
+		width = width + l + 2
 	}
 	for i := 0; i < width; i++ {
 		sepb.WriteString("-")
@@ -100,7 +96,7 @@ func (df Table) Print() string {
 	sb.WriteString("\n")
 	sb.WriteString(sepb.String())
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < n; i++ {
 		for _, col := range df.names {
 			sb.WriteString("|")
 			sb.WriteString(pad(strVecs[col][i], colLen[col]))
