@@ -1,11 +1,17 @@
 package vec
 
+import (
+	"fmt"
+
+	"github.com/kubistmi/goframe/utils"
+)
+
 // Hash ...
 func (v IntVector) Hash() Vector {
 
 	nhash := make(map[int]int)
 
-	i := 0
+	i := 1
 	for _, val := range v.obs {
 		if _, ok := nhash[val]; !ok {
 			nhash[val] = i
@@ -26,7 +32,7 @@ func (v IntVector) Hash() Vector {
 func (v StrVector) Hash() Vector {
 	nhash := make(map[string]int)
 
-	i := 0
+	i := 1
 	for _, val := range v.obs {
 		if _, ok := nhash[val]; !ok {
 			nhash[val] = i
@@ -81,59 +87,47 @@ func (v StrVector) GetHashVals() ([]int, int) {
 	return out, v.hash.size
 }
 
-// Let's leave this interface her - dunno why it doesnt work
-// // Hashable ...
-// type Hashable interface {
-// 	Vector
-// 	GetHashVals() ([]int, int)
-// }
+// SetHash ...
+func (v StrVector) SetHash(ri Vector) Vector {
 
-// Hash ...
-// func Hash(v Vector) Hashable {
+	r, ok := ri.(StrVector)
+	if !ok {
+		return v.setError(fmt.Errorf("%w parameter ri, expected: `%T`, got: `%T`", utils.ErrParamType, v, ri))
+	}
 
-// 	switch v := v.(type) {
-// 	case IntVector:
-// 		nhash := make(map[int]int)
+	var new struct {
+		lookup map[string]int
+		size   int
+	}
 
-// 		i := 0
-// 		for _, val := range v.obs {
-// 			if _, ok := nhash[val]; !ok {
-// 				nhash[val] = i
-// 				i++
-// 			}
-// 		}
+	new.lookup = make(map[string]int, len(r.hash.lookup))
+	for ix, val := range r.hash.lookup {
+		new.lookup[ix] = val
+	}
+	new.size = r.hash.size
 
-// 		fmt.Println(nhash)
+	v.hash = new
+	return v
+}
 
-// 		nhix := struct {
-// 			lookup map[int]int
-// 			size   int
-// 		}{nhash, i}
+// SetHash ...
+func (v IntVector) SetHash(ri Vector) Vector {
+	r, ok := ri.(IntVector)
+	if !ok {
+		return v.setError(fmt.Errorf("%w parameter ri, expected: `%T`, got: `%T`", utils.ErrParamType, v, ri))
+	}
 
-// 		v.hash = nhix
-// 		return v
+	var new struct {
+		lookup map[int]int
+		size   int
+	}
 
-// 	case StrVector:
-// 		nhash := make(map[string]int)
+	new.lookup = make(map[int]int, len(r.hash.lookup))
+	for ix, val := range r.hash.lookup {
+		new.lookup[ix] = val
+	}
+	new.size = r.hash.size
 
-// 		i := 0
-// 		for _, val := range v.obs {
-// 			if _, ok := nhash[val]; !ok {
-// 				nhash[val] = i
-// 				i++
-// 			}
-// 		}
-
-// 		fmt.Println(nhash)
-
-// 		nhix := struct {
-// 			lookup map[string]int
-// 			size   int
-// 		}{nhash, i}
-
-// 		v.hash = nhix
-// 		return v
-// 	}
-
-// 	return StrVector{err: fmt.Errorf("What?")}
-// }
+	v.hash = new
+	return v
+}

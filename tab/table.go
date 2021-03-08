@@ -6,19 +6,6 @@ import (
 	"github.com/kubistmi/goframe/vec"
 )
 
-func inverse(names []string) map[string]int {
-	inames := make(map[string]int)
-	for ix, val := range names {
-		inames[val] = ix
-	}
-	return inames
-}
-
-// Help constructing slices?
-func c(p ...int) []int {
-	return p
-}
-
 // Table ... -------------------------------------------------------------------
 type Table struct {
 	data  map[string]vec.Vector
