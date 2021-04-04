@@ -36,17 +36,3 @@ func Isin(w interface{}) interface{} {
 	return fmt.Errorf("%w parameter w, expected: `[]int` / `[]string`, got: %T", utils.ErrParamType, w)
 
 }
-
-func Seq(from, to, by int) []int {
-
-	if (by > 0 && from < to) || (by < 0 && from > to) {
-		size := (to - from) / by
-		out := make([]int, size)
-		for ix := range out {
-			out[ix] = from + ix*by
-		}
-		return out
-	}
-
-	return []int{}
-}
