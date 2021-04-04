@@ -23,6 +23,10 @@ func (df Table) ResetErr() Table {
 	return df
 }
 
+func (df Table) Err() error {
+	return df.err
+}
+
 // NewDf ...
 func NewDf(data map[string]vec.Vector) (Table, error) {
 

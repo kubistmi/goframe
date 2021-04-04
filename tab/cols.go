@@ -6,6 +6,10 @@ import (
 	"github.com/kubistmi/goframe/vec"
 )
 
+func (df Table) P(n string) vec.Vector {
+	return df.Pull(n)
+}
+
 // Pull ...
 func (df Table) Pull(n string) vec.Vector {
 	if err := df.checkCols([]string{n}); err != nil {

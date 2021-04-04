@@ -3,6 +3,7 @@ package tab
 import (
 	"fmt"
 
+	"github.com/kubistmi/goframe/utils"
 	"github.com/kubistmi/goframe/vec"
 )
 
@@ -33,6 +34,32 @@ func (df Table) Rows(p []int) Table {
 		names: df.names,
 		size:  [2]int{len(p), df.size[1]},
 	}
+}
+
+func (df Table) Mask(c []bool) Table {
+	if len(c) != df.size[0] {
+		return Table{
+			err: fmt.Errorf("%w size of slice `c` != size of Table `v`, expected: %v, got: %v", utils.ErrParamVal, df.size[0], len(c)),
+		}
+	}
+	pos := make([]int, 0, df.size[0])
+	for ix, val := range c {
+		if val {
+			pos = append(pos, ix)
+		}
+	}
+	return df.Rows(pos)
+}
+
+func (df Table) Fcol(col string, fn interface{}) Table {
+	mask, err := df.Pull(col).Check(fn)
+	if err != nil {
+		return Table{
+			err: err,
+		}
+	}
+
+	return df.Mask(mask)
 }
 
 // Filter ...
