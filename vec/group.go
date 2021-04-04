@@ -5,6 +5,8 @@ package vec
 // 	Group() Vector
 // }
 
+// IntVector implementations ---------------------------------------------------
+
 // Group ...
 func (v IntVector) Group() Vector {
 	groups := make(map[int][]int)
@@ -22,6 +24,8 @@ func (v IntVector) Group() Vector {
 	v.index = groups
 	return v
 }
+
+// StrVector implementations ---------------------------------------------------
 
 // Group ...
 func (v StrVector) Group() Vector {

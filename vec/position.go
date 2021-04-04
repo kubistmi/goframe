@@ -17,9 +17,7 @@ func (v IntVector) Loc(p []int) Vector {
 			return NewErrVec(fmt.Errorf("%w wrong position `p`, maximum allowed: %v, got %v", utils.ErrParamVal, v.Size()-1, val), v.Type())
 		}
 		new[ix] = v.data[val]
-		if v.na.Get(val) {
-			na.Set(val)
-		}
+		na.Setif(v.na.Get(val), ix)
 	}
 	return unsafeIntVec(new, na)
 }
@@ -80,9 +78,7 @@ func (v StrVector) Loc(p []int) Vector {
 			return NewErrVec(fmt.Errorf("%w wrong position `p`, maximum allowed: %v, got %v", utils.ErrParamVal, v.Size()-1, val), v.Type())
 		}
 		new[ix] = v.data[val]
-		if v.na.Get(val) {
-			na.Set(val)
-		}
+		na.Setif(v.na.Get(val), ix)
 	}
 	return unsafeStrVec(new, na)
 }
