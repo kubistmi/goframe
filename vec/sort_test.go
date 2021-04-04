@@ -7,7 +7,7 @@ import (
 )
 
 func TestOrder(t *testing.T) {
-	vec := NewVec([]int{1, 6, 22, 4, 9, 7, 8, 9})
+	vec := NewVec([]int{1, 6, 22, 4, 9, 7, 8, 9}, NewNA())
 	ix := vec.(IntVector).Order()
 	fmt.Println(vec)
 	fmt.Println(ix)
@@ -22,21 +22,19 @@ func TestIntVector_Sort(t *testing.T) {
 	}
 
 	ordr := IntVector{
-		obs:  []int{0, 1, 2, 3, 5, 4},
-		size: 6,
+		data: []int{0, 1, 2, 3, 5, 4},
 	}
 	ordrS := IntVector{
-		obs:  []int{0, 1, 2, 3, 4, 5},
-		size: 6,
+		data: []int{0, 1, 2, 3, 4, 5},
 	}
 
 	uniq := makeIntVec("uniq")
 	uniqS := makeIntVec("uniq")
-	uniqS.obs = []int{-20, 0, 1, 2, 6, 9}
+	uniqS.data = []int{-20, 0, 1, 2, 6, 9}
 
 	bins := makeIntVec("bins")
 	binsS := makeIntVec("bins")
-	binsS.obs = []int{0, 0, 0, 0, 0, 1, 1, 1, 1}
+	binsS.data = []int{0, 0, 0, 0, 0, 1, 1, 1, 1}
 
 	tests := []testIntVec{
 		testIntVec{"ordr", ordr, ordrS},
@@ -60,26 +58,23 @@ func TestStrVector_Sort(t *testing.T) {
 	}
 
 	ordr := StrVector{
-		obs:  []string{"a", "b", "c", "d"},
-		size: 4,
+		data: []string{"a", "b", "c", "d"},
 	}
 
 	rev := StrVector{
-		obs:  []string{"z", "y", "x", "w", "v", "a"},
-		size: 6,
+		data: []string{"z", "y", "x", "w", "v", "a"},
 	}
 	revS := StrVector{
-		obs:  []string{"a", "v", "w", "x", "y", "z"},
-		size: 6,
+		data: []string{"a", "v", "w", "x", "y", "z"},
 	}
 
 	uniq := makeStrVec("uniq")
 	uniqS := makeStrVec("uniq")
-	uniqS.obs = []string{"R", "SQL", "awk", "bash", "goframe", "python"}
+	uniqS.data = []string{"R", "SQL", "awk", "bash", "goframe", "python"}
 
 	bins := makeStrVec("bins")
 	binsS := makeStrVec("bins")
-	binsS.obs = []string{"0", "0", "0", "0", "0", "1", "1", "1", "1"}
+	binsS.data = []string{"0", "0", "0", "0", "0", "1", "1", "1", "1"}
 
 	tests := []testStrVec{
 		testStrVec{"ordered", ordr, ordr},

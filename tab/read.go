@@ -125,7 +125,7 @@ func ReadCsv(reader io.Reader) Table {
 	data := make(map[string]vec.Vector, len(colnames))
 
 	for _, name := range colnames {
-		data[name] = makeVec(name, i, ints, strings)
+		data[name] = prepareVec(name, i, ints, strings)
 	}
 
 	df, err := NewDf(data)
@@ -147,13 +147,13 @@ func testType(input string) string {
 
 }
 
-func makeVec(name string, i int, ints map[string][]int, strings map[string][]string) vec.Vector {
+func prepareVec(name string, i int, ints map[string][]int, strings map[string][]string) vec.Vector {
 	if val, ok := ints[name]; ok {
 		data := make([]int, i+1)
 		copy(data, val[:i+2])
-		return vec.NewVec(data)
+		return vec.NewVec(data, nil)
 	}
 	data := make([]string, i+1)
 	copy(data, strings[name][:i+2])
-	return vec.NewVec(data)
+	return vec.NewVec(data, nil)
 }

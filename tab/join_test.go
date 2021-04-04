@@ -18,13 +18,13 @@ func TestTable_LeftJoin(t *testing.T) {
 	}
 
 	x, _ := NewDf(map[string]vec.Vector{
-		"id":  vec.NewVec([]int{0, 6, 7, 1, 2}),
-		"val": vec.NewVec([]string{"a", "b", "c", "d", "e"}),
+		"id":  vec.NewVec([]int{0, 6, 7, 1, 2}, nil),
+		"val": vec.NewVec([]string{"a", "b", "c", "d", "e"}, nil),
 	})
 
 	y, _ := NewDf(map[string]vec.Vector{
-		"id":   vec.NewVec([]int{1, 2, 0, 7, 6}),
-		"val2": vec.NewVec([]string{"a", "b", "c", "d", "e"}),
+		"id":   vec.NewVec([]int{1, 2, 0, 7, 6}, nil),
+		"val2": vec.NewVec([]string{"a", "b", "c", "d", "e"}, nil),
 	})
 
 	tests := []testTable{

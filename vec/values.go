@@ -1,59 +1,77 @@
 package vec
 
-// GetI ...
-func (v IntVector) GetI() (interface{}, Set) {
-	new := make([]int, v.Size())
-	copy(new, v.obs)
-	return new, v.na.Copy()
-}
+// IntVector implementations ---------------------------------------------------
 
-// GetI ...
-func (v StrVector) GetI() (interface{}, Set) {
-	new := make([]string, v.Size())
-	copy(new, v.obs)
-	return new, v.na.Copy()
+// Get returns a copy of the underlying data
+func (v IntVector) GetI() (interface{}, NA, error) {
+	if err := v.Err(); err != nil {
+		return []int{}, nil, err
+	}
+	new := make([]int, v.Size())
+	copy(new, v.data)
+	newna := v.na.CopyNA()
+	return new, newna, nil
 }
 
 // Get ...
-func (v IntVector) Get() ([]int, Set) {
+func (v IntVector) Get() ([]int, NA, error) {
+	if err := v.Err(); err != nil {
+		return []int{}, nil, err
+	}
 	new := make([]int, v.Size())
-	copy(new, v.obs)
-	return new, v.na.Copy()
+	copy(new, v.data)
+	return new, v.na.CopyNA(), nil
 }
 
-// Get ...
-func (v StrVector) Get() ([]string, Set) {
-	new := make([]string, v.Size())
-	copy(new, v.obs)
-	return new, v.na.Copy()
-}
-
-// Copy ...
+// Copy returns a copy of Vector
 func (v IntVector) Copy() Vector {
-
-	new := make([]int, v.size)
-	copy(new, v.obs)
+	if err := v.Err(); err != nil {
+		return NewErrVec(err, v.Type())
+	}
+	new := make([]int, v.Size())
+	copy(new, v.data)
+	newna := v.na.CopyNA()
 
 	return IntVector{
-		obs:  new,
-		na:   v.na.Copy(),
-		size: v.size,
-		hash: v.hash,
-		err:  v.err,
+		data: new,
+		na:   newna,
 	}
 }
 
-// Copy ...
-func (v StrVector) Copy() Vector {
+// StrVector implementations ---------------------------------------------------
 
-	new := make([]string, v.size)
-	copy(new, v.obs)
+// Get returns a copy of the underlying data
+func (v StrVector) GetI() (interface{}, NA, error) {
+	if err := v.Err(); err != nil {
+		return []string{}, nil, err
+	}
+	new := make([]string, v.Size())
+	copy(new, v.data)
+	newna := v.na.CopyNA()
+	return new, newna, nil
+}
+
+// Get ...
+func (v StrVector) Get() ([]string, NA, error) {
+	if err := v.Err(); err != nil {
+		return []string{}, nil, err
+	}
+	new := make([]string, v.Size())
+	copy(new, v.data)
+	return new, v.na.CopyNA(), nil
+}
+
+// Copy returns a copy of Vector
+func (v StrVector) Copy() Vector {
+	if err := v.Err(); err != nil {
+		return NewErrVec(err, v.Type())
+	}
+	new := make([]string, v.Size())
+	copy(new, v.data)
+	newna := v.na.CopyNA()
 
 	return StrVector{
-		obs:  new,
-		na:   v.na.Copy(),
-		size: v.size,
-		hash: v.hash,
-		err:  v.err,
+		data: new,
+		na:   newna,
 	}
 }

@@ -18,7 +18,10 @@ func (df Table) Sort(col []string) Table {
 	for c := 0; c < len(col)-1; c++ {
 		switch v := df.data[col[c]].(type) {
 		case vec.IntVector:
-			vals, _ := v.Get()
+			vals, _, err := v.Get()
+			if err != nil {
+				return df.setError(err)
+			}
 			start := 0
 			check := vals[ix[0]]
 			for i := 1; i < len(ix); i++ {
@@ -47,7 +50,10 @@ func (df Table) Sort(col []string) Table {
 				}
 			}
 		case vec.StrVector:
-			vals, _ := v.Get()
+			vals, _, err := v.Get()
+			if err != nil {
+				return df.setError(err)
+			}
 
 			start := 0
 			check := vals[ix[start]]

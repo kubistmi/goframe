@@ -9,7 +9,7 @@ package vec
 func (v IntVector) Group() Vector {
 	groups := make(map[int][]int)
 
-	for ix, val := range v.obs {
+	for ix, val := range v.data {
 		slc := groups[val]
 		if len(slc) == cap(slc) {
 			new := make([]int, len(slc), cap(slc)+100)
@@ -27,7 +27,7 @@ func (v IntVector) Group() Vector {
 func (v StrVector) Group() Vector {
 	groups := make(map[string][]int)
 
-	for ix, val := range v.obs {
+	for ix, val := range v.data {
 		slc := groups[val]
 		if len(slc) == cap(slc) {
 			news := make([]int, len(slc), cap(slc)+100)

@@ -18,11 +18,11 @@ func TestIntVector_Mutate(t *testing.T) {
 
 	uniq := makeIntVec("uniq")
 	uniqW := makeIntVec("uniq")
-	uniqW.obs = []int{1, 4, 0, 400, 36, 81}
+	uniqW.data = []int{1, 4, 0, 400, 36, 81}
 
 	bins := makeIntVec("bins")
 	binsW := makeIntVec("bins")
-	binsW.obs = []int{-1, 0, -1, -1, -1, 0, 0, 0, -1}
+	binsW.data = []int{-1, 0, -1, -1, -1, 0, 0, 0, -1}
 
 	errW := IntVector{err: fmt.Errorf("wrong function, expected: `func(int) int`, got: `%w`", fmt.Errorf("undefined function specification"))}
 
@@ -50,11 +50,11 @@ func TestStrVector_Mutate(t *testing.T) {
 
 	uniq := makeStrVec("uniq")
 	uniqW := makeStrVec("uniq")
-	uniqW.obs = []string{"ba", "aw", "R", "go", "py", "SQ"}
+	uniqW.data = []string{"ba", "aw", "R", "go", "py", "SQ"}
 
 	bins := makeStrVec("bins")
 	binsW := makeStrVec("bins")
-	binsW.obs = []string{"a0", "a1", "a0", "a0", "a0", "a1", "a1", "a1", "a0"}
+	binsW.data = []string{"a0", "a1", "a0", "a0", "a0", "a1", "a1", "a1", "a0"}
 
 	errW := StrVector{err: fmt.Errorf("wrong function, expected: `func(string) string`, got: `%w`", fmt.Errorf("undefined function specification"))}
 

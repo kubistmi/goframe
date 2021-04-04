@@ -13,7 +13,7 @@ func (df Table) P(n string) vec.Vector {
 // Pull ...
 func (df Table) Pull(n string) vec.Vector {
 	if err := df.checkCols([]string{n}); err != nil {
-		return vec.NewErrVec(err)
+		return vec.NewErrVec(err, vec.StrType)
 	}
 	return df.data[n]
 }
@@ -22,7 +22,7 @@ func (df Table) Pull(n string) vec.Vector {
 func (df Table) Pulln(p int) vec.Vector {
 	if p >= df.size[1] {
 		//? should be own type
-		return vec.NewErrVec(fmt.Errorf("wrong position, maximum allowed: %v, got %v", df.size[1]-1, p))
+		return vec.NewErrVec(fmt.Errorf("wrong position, maximum allowed: %v, got %v", df.size[1]-1, p), vec.StrType)
 	}
 	return df.Pull(df.names[p])
 }

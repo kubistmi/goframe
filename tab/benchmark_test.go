@@ -14,7 +14,7 @@ func BenchmarkSetup(b *testing.B) {
 		for i := 0; i < N; i++ {
 			vals[i] = i
 		}
-		NewDf(map[string]vec.Vector{"ints": vec.NewVec(vals)})
+		NewDf(map[string]vec.Vector{"ints": vec.NewVec(vals, nil)})
 	}
 }
 
@@ -24,7 +24,7 @@ func BenchmarkMutate(b *testing.B) {
 		for i := 0; i < N; i++ {
 			vals[i] = i
 		}
-		df, _ := NewDf(map[string]vec.Vector{"ints": vec.NewVec(vals)})
+		df, _ := NewDf(map[string]vec.Vector{"ints": vec.NewVec(vals, nil)})
 		df.Mutate(MapF("ints2", func(a int) int { return a * a }, "ints"))
 	}
 }

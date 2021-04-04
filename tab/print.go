@@ -63,13 +63,17 @@ func (df Table) Print() string {
 	dfV := df.Head(n)
 	colLen := make(map[string]int, len(df.names))
 	strVecs := make(map[string][]string, len(dfV.names))
-	strNas := make(map[string]vec.Set, len(dfV.names))
+	strNas := make(map[string]vec.NA, len(dfV.names))
 	var sb strings.Builder
 	var sepb strings.Builder
+	var err error
 
 	for _, val := range df.names {
 		colLen[val] = lim(true, lim(false, nchar(val)+5, colmax), 10)
-		strVecs[val], strNas[val] = dfV.data[val].ToStr().Get()
+		strVecs[val], strNas[val], err = dfV.data[val].ToStr().Get()
+		if err != nil {
+			return (fmt.Errorf("error in accessing the data").Error())
+		}
 	}
 
 	for _, col := range df.names {

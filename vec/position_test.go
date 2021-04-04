@@ -18,19 +18,16 @@ func TestIntVector_Loc(t *testing.T) {
 
 	uniq := makeIntVec("uniq")
 	first := makeIntVec("uniq")
-	first.obs = first.obs[:3]
-	first.size = 3
+	first.data = first.data[:3]
 
 	last := makeIntVec("uniq")
-	last.obs = last.obs[4:]
-	last.size = 2
+	last.data = last.data[4:]
 
 	middle := makeIntVec("uniq")
-	middle.obs = middle.obs[2:4]
-	middle.size = 2
+	middle.data = middle.data[2:4]
 
-	errWs := NewErrVec(fmt.Errorf("wrong position, maximum allowed: 5, got -1"))
-	errWl := NewErrVec(fmt.Errorf("wrong position, maximum allowed: 5, got 10"))
+	errWs := newErrIntVec(fmt.Errorf("wrong position, maximum allowed: 5, got -1"))
+	errWl := newErrIntVec(fmt.Errorf("wrong position, maximum allowed: 5, got 10"))
 
 	tests := []testIntVec{
 		testIntVec{"first three", uniq, []int{0, 1, 2}, first},
@@ -58,19 +55,16 @@ func TestStrVector_Loc(t *testing.T) {
 
 	uniq := makeStrVec("uniq")
 	first := makeStrVec("uniq")
-	first.obs = first.obs[:3]
-	first.size = 3
+	first.data = first.data[:3]
 
 	last := makeStrVec("uniq")
-	last.obs = last.obs[4:]
-	last.size = 2
+	last.data = last.data[4:]
 
 	middle := makeStrVec("uniq")
-	middle.obs = middle.obs[2:4]
-	middle.size = 2
+	middle.data = middle.data[2:4]
 
-	errWs := NewErrVec(fmt.Errorf("wrong position, maximum allowed: 5, got -1"))
-	errWl := NewErrVec(fmt.Errorf("wrong position, maximum allowed: 5, got 10"))
+	errWs := newErrStrVec(fmt.Errorf("wrong position, maximum allowed: 5, got -1"))
+	errWl := newErrStrVec(fmt.Errorf("wrong position, maximum allowed: 5, got 10"))
 
 	tests := []testStrVec{
 		testStrVec{"first three", uniq, []int{0, 1, 2}, first},
@@ -167,21 +161,19 @@ func TestIntVector_Filter(t *testing.T) {
 
 	uniq := makeIntVec("uniq")
 	betw := makeIntVec("uniq")
-	betw.obs = betw.obs[:3]
-	betw.size = 3
+	betw.data = betw.data[:3]
 
 	last := makeIntVec("uniq")
-	last.obs = last.obs[4:]
-	last.size = 2
+	last.data = last.data[4:]
 
 	bins := makeIntVec("bins")
 	binsW := makeIntVec("bins").Loc([]int{0, 2, 3, 4, 8})
 
-	errW := StrVector{err: fmt.Errorf(
+	errW := newErrStrVec(fmt.Errorf(
 		"error in Check: %w",
 		fmt.Errorf("wrong function, expected: `func(int) bool`, got: `%w`",
 			fmt.Errorf("undefined function specification")),
-	)}
+	))
 
 	tests := []testIntVec{
 		testIntVec{"between", uniq, utils.SkipNA(func(v int) bool { return v > -1 && v < 3 }), betw},
@@ -208,26 +200,23 @@ func TestStrVector_Filter(t *testing.T) {
 
 	uniq := makeStrVec("uniq")
 	smaller := makeStrVec("uniq")
-	smaller.obs = smaller.obs[:2]
-	smaller.size = 2
+	smaller.data = smaller.data[:2]
 
 	last := makeStrVec("uniq")
-	last.obs = last.obs[4:5]
-	last.size = 1
+	last.data = last.data[4:5]
 
 	bins := makeStrVec("bins")
 	binsW := makeStrVec("bins").Loc([]int{1, 5, 6, 7})
 
 	uneven := makeStrVec("uneven")
 	isin := makeStrVec("uneven")
-	isin.obs = isin.obs[:3]
-	isin.size = 3
+	isin.data = isin.data[:3]
 
-	errW := StrVector{err: fmt.Errorf(
+	errW := newErrStrVec(fmt.Errorf(
 		"error in Check: %w",
 		fmt.Errorf("wrong function, expected: `func(string) bool`, got: `%w`",
 			fmt.Errorf("undefined function specification")),
-	)}
+	))
 
 	tests := []testStrVec{
 		testStrVec{"between", uniq, utils.SkipNA(func(v string) bool { return v > "a" && v < "bb" }), smaller},
@@ -257,19 +246,16 @@ func TestIntVector_Mask(t *testing.T) {
 
 	uniq := makeIntVec("uniq")
 	first := makeIntVec("uniq")
-	first.obs = first.obs[:3]
-	first.size = 3
+	first.data = first.data[:3]
 
 	last := makeIntVec("uniq")
-	last.obs = last.obs[4:]
-	last.size = 2
+	last.data = last.data[4:]
 
 	middle := makeIntVec("uniq")
-	middle.obs = middle.obs[2:4]
-	middle.size = 2
+	middle.data = middle.data[2:4]
 
-	errWs := NewErrVec(fmt.Errorf("size of boolean slice does not match the size of Vector, expected: 6, got: 2"))
-	errWl := NewErrVec(fmt.Errorf("size of boolean slice does not match the size of Vector, expected: 6, got: 8"))
+	errWs := newErrIntVec(fmt.Errorf("size of boolean slice does not match the size of Vector, expected: 6, got: 2"))
+	errWl := newErrIntVec(fmt.Errorf("size of boolean slice does not match the size of Vector, expected: 6, got: 8"))
 
 	tests := []testIntVec{
 		testIntVec{"first three", uniq, []bool{T, T, T, F, F, F}, first},
@@ -299,19 +285,16 @@ func TestStrVector_Mask(t *testing.T) {
 
 	uniq := makeStrVec("uniq")
 	first := makeStrVec("uniq")
-	first.obs = first.obs[:3]
-	first.size = 3
+	first.data = first.data[:3]
 
 	last := makeStrVec("uniq")
-	last.obs = last.obs[4:]
-	last.size = 2
+	last.data = last.data[4:]
 
 	middle := makeStrVec("uniq")
-	middle.obs = middle.obs[2:4]
-	middle.size = 2
+	middle.data = middle.data[2:4]
 
-	errWs := NewErrVec(fmt.Errorf("size of boolean slice does not match the size of Vector, expected: 6, got: 2"))
-	errWl := NewErrVec(fmt.Errorf("size of boolean slice does not match the size of Vector, expected: 6, got: 8"))
+	errWs := newErrStrVec(fmt.Errorf("size of boolean slice does not match the size of Vector, expected: 6, got: 2"))
+	errWl := newErrStrVec(fmt.Errorf("size of boolean slice does not match the size of Vector, expected: 6, got: 8"))
 
 	tests := []testStrVec{
 		testStrVec{"first three", uniq, []bool{T, T, T, F, F, F}, first},

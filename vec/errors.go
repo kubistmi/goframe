@@ -1,43 +1,52 @@
 package vec
 
-// Err  ...
+import (
+	"fmt"
+)
+
+// NewErrVector prepares a new Vector of the selected type with just the error
+func NewErrVec(err error, kind Datatype) Vector {
+	switch kind {
+	case IntType:
+		return IntVector{
+			data: []int{},
+			na:   NewSet(),
+			err:  err,
+		}
+	case StrType:
+		return StrVector{
+			data: []string{},
+			na:   NewSet(),
+			err:  err,
+		}
+	}
+	return NewErrVec(fmt.Errorf("not implemented"), StrType)
+}
+
+// Err returns the error from previous operations
 func (v IntVector) Err() error {
 	return v.err
 }
 
-// Err  ...
+// newErrIntVector prepares a new IntVector with just the error
+func newErrIntVec(err error) IntVector {
+	return IntVector{
+		data: []int{},
+		na:   NewSet(),
+		err:  err,
+	}
+}
+
+// Err returns the error from previous operations
 func (v StrVector) Err() error {
 	return v.err
 }
 
-func (v IntVector) setError(err error) Vector {
-	v.err = err
-	return v
-}
-
-func (v StrVector) setError(err error) Vector {
-	v.err = err
-	return v
-}
-
-func (v IntVector) setStrError(err error) StrVector {
-	var e StrVector
-	e.err = err
-	return e
-}
-
-func (v StrVector) setStrError(err error) StrVector {
-	v.err = err
-	return v
-}
-
-func (v IntVector) setIntError(err error) IntVector {
-	v.err = err
-	return v
-}
-
-func (v StrVector) setIntError(err error) IntVector {
-	var e IntVector
-	e.err = err
-	return e
+// newErrVector prepares a new StrVector with just the error
+func newErrStrVec(err error) StrVector {
+	return StrVector{
+		data: []string{},
+		na:   NewSet(),
+		err:  err,
+	}
 }

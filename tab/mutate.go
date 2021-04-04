@@ -57,18 +57,22 @@ func (df Table) MutateM(maf ...MapFun) Table {
 		switch f := val.fun.(type) {
 		case func(map[string]string) string:
 			res := make([]string, df.size[0])
-			resna := vec.Set{}
+			resna := vec.NewNA()
 			data := make(map[string][]string, len(val.cols))
-			nas := vec.Set{}
-			na := vec.Set{}
+			nas := vec.NewNA()
+			na := vec.NewNA()
+			var err error
 			parm := make(map[string]string, len(val.cols))
 			for _, col := range val.cols {
-				data[col], na = df.Pull(col).Str().Get()
-				nas = nas.Extend(na)
+				data[col], na, err = df.Pull(col).Str().Get()
+				if err != nil {
+					return (df.setError(fmt.Errorf("error accessign the data")))
+				}
+				nas.Extend(na)
 			}
 			for ix := range res {
 				if ok := nas.Get(ix); ok {
-					resna = resna.Set(ix)
+					resna.Set(ix)
 					continue
 				}
 				for _, col := range val.cols {
@@ -79,18 +83,22 @@ func (df Table) MutateM(maf ...MapFun) Table {
 			out[val.col] = vec.NewVec(res, resna)
 		case func(map[string]int) int:
 			res := make([]int, df.size[0])
-			resna := vec.Set{}
+			resna := vec.NewNA()
 			data := make(map[string][]int, len(val.cols))
-			nas := vec.Set{}
-			na := vec.Set{}
+			nas := vec.NewNA()
+			na := vec.NewNA()
+			var err error
 			parm := make(map[string]int, len(val.cols))
 			for _, col := range val.cols {
-				data[col], na = df.Pull(col).Int().Get()
-				nas = nas.Extend(na)
+				data[col], na, err = df.Pull(col).Int().Get()
+				if err != nil {
+					return (df.setError(fmt.Errorf("error accessign the data")))
+				}
+				nas.Extend(na)
 			}
 			for ix := range res {
 				if ok := nas.Get(ix); ok {
-					resna = resna.Set(ix)
+					resna.Set(ix)
 					continue
 				}
 				for _, col := range val.cols {

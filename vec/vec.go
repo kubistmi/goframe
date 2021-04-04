@@ -11,64 +11,47 @@ import (
 // Vector ...
 type Vector interface {
 	Size() int
+	Type() Datatype
+	Err() error
+	GetI() (interface{}, NA, error)
+	Copy() Vector
 	Int() IntVector
 	Str() StrVector
-	//Get[T vector_type]() []T
-	GetI() (interface{}, Set)
+	ToStr() StrVector
 	Loc(p []int) Vector
 	Check(interface{}) ([]bool, error)
 	Filter(interface{}) Vector
 	Mask([]bool) Vector
-	Err() error
-	setError(error) Vector
+	//setError(error) Vector
 	Hash() Vector
 	IsHashed() bool
 	GetHashVals() ([]int, int)
 	SetHash(Vector) Vector
-	Copy() Vector
 	Sort() Vector
 	Order() []int
 	Mutate(interface{}) Vector
 	Group() Vector
-	//TODO: remove after testing
-	Elem(int) (interface{}, bool)
-	ToStr() StrVector
-}
-
-// NewErrVec ...
-func NewErrVec(err error) Vector {
-	return StrVector{
-		err: err,
-	}
+	// Is(val interface{}) func() (bool, error)
 }
 
 // NewVec ...
-func NewVec(data interface{}, nas ...Set) Vector {
-
-	var na Set
-	if len(nas) == 0 {
-		na = make(Set)
-	} else {
-		na = nas[0]
-	}
+func NewVec(data interface{}, na NA) Vector {
 
 	switch t := data.(type) {
 	case []int:
 		new := make([]int, len(t))
 		copy(new, t)
 		return IntVector{
-			obs:  new,
+			data: new,
 			na:   na,
-			size: len(t),
 		}
 
 	case []string:
 		new := make([]string, len(t))
 		copy(new, t)
 		return StrVector{
-			obs:  new,
+			data: new,
 			na:   na,
-			size: len(t),
 		}
 	default:
 		return StrVector{

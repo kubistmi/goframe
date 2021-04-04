@@ -12,7 +12,7 @@ func (v IntVector) Hash() Vector {
 	nhash := make(map[int]int)
 
 	i := 1
-	for _, val := range v.obs {
+	for _, val := range v.data {
 		if _, ok := nhash[val]; !ok {
 			nhash[val] = i
 			i++
@@ -33,7 +33,7 @@ func (v StrVector) Hash() Vector {
 	nhash := make(map[string]int)
 
 	i := 1
-	for _, val := range v.obs {
+	for _, val := range v.data {
 		if _, ok := nhash[val]; !ok {
 			nhash[val] = i
 			i++
@@ -71,8 +71,8 @@ func (v StrVector) IsHashed() bool {
 
 // GetHashVals ...
 func (v IntVector) GetHashVals() ([]int, int) {
-	out := make([]int, v.size)
-	for ix, val := range v.obs {
+	out := make([]int, v.Size())
+	for ix, val := range v.data {
 		out[ix] = v.hash.lookup[val]
 	}
 	return out, v.hash.size
@@ -80,8 +80,8 @@ func (v IntVector) GetHashVals() ([]int, int) {
 
 // GetHashVals ...
 func (v StrVector) GetHashVals() ([]int, int) {
-	out := make([]int, v.size)
-	for ix, val := range v.obs {
+	out := make([]int, v.Size())
+	for ix, val := range v.data {
 		out[ix] = v.hash.lookup[val]
 	}
 	return out, v.hash.size
@@ -92,7 +92,7 @@ func (v StrVector) SetHash(ri Vector) Vector {
 
 	r, ok := ri.(StrVector)
 	if !ok {
-		return v.setError(fmt.Errorf("%w parameter ri, expected: `%T`, got: `%T`", utils.ErrParamType, v, ri))
+		return NewErrVec(fmt.Errorf("%w parameter ri, expected: `%T`, got: `%T`", utils.ErrParamType, v, ri), v.Type())
 	}
 
 	var new struct {
@@ -114,7 +114,7 @@ func (v StrVector) SetHash(ri Vector) Vector {
 func (v IntVector) SetHash(ri Vector) Vector {
 	r, ok := ri.(IntVector)
 	if !ok {
-		return v.setError(fmt.Errorf("%w parameter ri, expected: `%T`, got: `%T`", utils.ErrParamType, v, ri))
+		return NewErrVec(fmt.Errorf("%w parameter ri, expected: `%T`, got: `%T`", utils.ErrParamType, v, ri), v.Type())
 	}
 
 	var new struct {

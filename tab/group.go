@@ -81,14 +81,14 @@ func (df Table) Agg(maf ...MapFun) Table {
 			for i, g := range grps {
 				aggval[i] = f(df.data[val.col].Loc(df.index.grp[g]))
 			}
-			new[val.col] = vec.NewVec(aggval)
+			new[val.col] = vec.NewVec(aggval, nil)
 			cols = append(cols, val.col)
 		case func(...vec.Vector) string:
 			aggval := make([]string, len(grps))
 			for i, g := range grps {
 				aggval[i] = f(df.data[val.col].Loc(df.index.grp[g]))
 			}
-			new[val.col] = vec.NewVec(aggval)
+			new[val.col] = vec.NewVec(aggval, nil)
 			cols = append(cols, val.col)
 		}
 	}

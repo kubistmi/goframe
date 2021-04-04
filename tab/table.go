@@ -18,13 +18,18 @@ type Table struct {
 	err  error
 }
 
-func (df Table) ResetErr() Table {
+func (df Table) Err() error {
+	return df.err
+}
+
+func (df Table) resetErr() Table {
 	df.err = nil
 	return df
 }
 
-func (df Table) Err() error {
-	return df.err
+func (df Table) setError(err error) Table {
+	df.err = err
+	return df
 }
 
 // NewDf ...
