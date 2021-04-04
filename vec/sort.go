@@ -38,7 +38,10 @@ func order(s sort.Interface, na NA) []int {
 	return pos
 }
 
+// IntVector implementations ---------------------------------------------------
+
 // Sort ...
+//TODO: NA handling
 func (v IntVector) Sort() Vector {
 	new := make([]int, v.Size())
 	copy(new, v.data)
@@ -47,18 +50,21 @@ func (v IntVector) Sort() Vector {
 	return v
 }
 
+// Order ...
+func (v IntVector) Order() []int {
+	return order(sort.IntSlice(v.data), v.na)
+}
+
+// StrVector implementations ---------------------------------------------------
+
 // Sort ...
+//TODO: NA handling
 func (v StrVector) Sort() Vector {
 	new := make([]string, v.Size())
 	copy(new, v.data)
 	sort.Strings(new)
 	v.data = new
 	return v
-}
-
-// Order ...
-func (v IntVector) Order() []int {
-	return order(sort.IntSlice(v.data), v.na)
 }
 
 // Order ...

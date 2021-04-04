@@ -13,10 +13,18 @@ type Datatype int
 const (
 	//StringType describes a Vector type based on []string
 	StrType Datatype = iota
+
 	//IntType describes a Vector type based on []int
 	IntType
-	//FloatType describes a Vector type based on []float
-	FloatType
+
+	//NumType describes a Vector type based on []float
+	NumType
+
+	//BoolType describes a Vector type based on []bool
+	BoolType
+
+	//DateType describes a Vector type based on []time.Time
+	DateType
 )
 
 // IntVector implementations ---------------------------------------------------
@@ -34,7 +42,7 @@ type IntVector struct {
 }
 
 // NewIntVector creates an IntVector and populates it with a copy of used values
-func NewIntVec(d []int, n NA, err error) IntVector {
+func NewIntVec(d []int, n NA) IntVector {
 	new := make([]int, len(d))
 	copy(new, d)
 	newna := n.CopyNA()
@@ -42,7 +50,6 @@ func NewIntVec(d []int, n NA, err error) IntVector {
 	return IntVector{
 		data: new,
 		na:   newna,
-		err:  err,
 	}
 }
 
@@ -75,13 +82,14 @@ func (v IntVector) ToStr() StrVector {
 	data := make([]string, v.Size())
 
 	for ix, val := range v.data {
-		data[ix] = strconv.Itoa(val)
+		if v.na.Get(ix) {
+			data[ix] = ""
+		} else {
+			data[ix] = strconv.Itoa(val)
+		}
 	}
 
-	return StrVector{
-		data: data,
-		na:   v.na,
-	}
+	return NewStrVec(data, v.na.CopyNA())
 }
 
 // Str attempts to type switch the Vector to StrVector
@@ -110,7 +118,7 @@ type StrVector struct {
 }
 
 // NewStrVector creates an StrVector and populates it with a copy of used values
-func NewStrVec(d []string, n NA, err error) StrVector {
+func NewStrVec(d []string, n NA) StrVector {
 	new := make([]string, len(d))
 	copy(new, d)
 	newna := n.CopyNA()
@@ -118,7 +126,6 @@ func NewStrVec(d []string, n NA, err error) StrVector {
 	return StrVector{
 		data: new,
 		na:   newna,
-		err:  err,
 	}
 }
 

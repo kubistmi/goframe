@@ -6,6 +6,8 @@ import (
 	"github.com/kubistmi/goframe/utils"
 )
 
+// IntVector implementations ---------------------------------------------------
+
 // Mutate ...
 func (v IntVector) Mutate(f interface{}) Vector {
 	fun, ok := f.(func(int, bool) (int, bool))
@@ -17,20 +19,16 @@ func (v IntVector) Mutate(f interface{}) Vector {
 	}
 
 	new := make([]int, v.Size())
-	newNA := make(Set, v.na.Size())
+	newna := make(Set, v.na.Size())
 	var na bool
 	for ix, val := range v.data {
 		new[ix], na = fun(val, v.na.Get(ix))
-		if na {
-			newNA.Set(ix)
-		}
+		newna.Setif(na, ix)
 	}
-	return IntVector{
-		data: new,
-		na:   newNA,
-		hash: v.hash,
-	}
+	return NewIntVec(new, newna)
 }
+
+// StrVector implementations ---------------------------------------------------
 
 // Mutate ...
 func (v StrVector) Mutate(f interface{}) Vector {
@@ -43,17 +41,11 @@ func (v StrVector) Mutate(f interface{}) Vector {
 	}
 
 	new := make([]string, v.Size())
-	newNA := make(Set, v.na.Size())
+	newna := make(Set, v.na.Size())
 	var na bool
 	for ix, val := range v.data {
 		new[ix], na = fun(val, v.na.Get(ix))
-		if na {
-			newNA.Set(ix)
-		}
+		newna.Setif(na, ix)
 	}
-	return StrVector{
-		data: new,
-		na:   newNA,
-		hash: v.hash,
-	}
+	return NewStrVec(new, newna)
 }

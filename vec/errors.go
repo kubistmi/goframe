@@ -23,6 +23,8 @@ func NewErrVec(err error, kind Datatype) Vector {
 	return NewErrVec(fmt.Errorf("not implemented"), StrType)
 }
 
+// IntVector implementations ---------------------------------------------------
+
 // Err returns the error from previous operations
 func (v IntVector) Err() error {
 	return v.err
@@ -36,6 +38,8 @@ func newErrIntVec(err error) IntVector {
 		err:  err,
 	}
 }
+
+// StrVector implementations ---------------------------------------------------
 
 // Err returns the error from previous operations
 func (v StrVector) Err() error {

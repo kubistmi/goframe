@@ -22,7 +22,6 @@ type Vector interface {
 	Check(interface{}) ([]bool, error)
 	Filter(interface{}) Vector
 	Mask([]bool) Vector
-	//setError(error) Vector
 	Hash() Vector
 	IsHashed() bool
 	GetHashVals() ([]int, int)
