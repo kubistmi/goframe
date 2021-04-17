@@ -75,3 +75,41 @@ func (v StrVector) Copy() Vector {
 		na:   newna,
 	}
 }
+
+// BoolVector implementations ---------------------------------------------------
+
+// Get returns a copy of the underlying data
+func (v BoolVector) GetI() (interface{}, NA, error) {
+	if err := v.Err(); err != nil {
+		return []bool{}, nil, err
+	}
+	new := make([]bool, v.Size())
+	copy(new, v.data)
+	newna := v.na.CopyNA()
+	return new, newna, nil
+}
+
+// Get ...
+func (v BoolVector) Get() ([]bool, NA, error) {
+	if err := v.Err(); err != nil {
+		return []bool{}, nil, err
+	}
+	new := make([]bool, v.Size())
+	copy(new, v.data)
+	return new, v.na.CopyNA(), nil
+}
+
+// Copy returns a copy of Vector
+func (v BoolVector) Copy() Vector {
+	if err := v.Err(); err != nil {
+		return NewErrVec(err, v.Type())
+	}
+	new := make([]bool, v.Size())
+	copy(new, v.data)
+	newna := v.na.CopyNA()
+
+	return BoolVector{
+		data: new,
+		na:   newna,
+	}
+}

@@ -30,6 +30,7 @@ type Vector interface {
 	Order() []int
 	Mutate(interface{}) Vector
 	Group() Vector
+	Bool() BoolVector
 
 	//! concepts
 	ElemI(i int) (interface{}, bool)
@@ -56,6 +57,13 @@ func NewVec(data interface{}, na NA) Vector {
 		new := make([]string, len(t))
 		copy(new, t)
 		return StrVector{
+			data: new,
+			na:   na,
+		}
+	case []bool:
+		new := make([]bool, len(t))
+		copy(new, t)
+		return BoolVector{
 			data: new,
 			na:   na,
 		}

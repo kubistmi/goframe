@@ -153,3 +153,78 @@ func (v StrVector) SetHash(ri Vector) Vector {
 	v.hash = new
 	return v
 }
+
+// BoolVector implementations ---------------------------------------------------
+
+type boolHash struct {
+	lookup map[bool]int
+	size   int
+}
+
+func (h boolHash) Copy() boolHash {
+	new := make(map[bool]int, len(h.lookup))
+	for ix, val := range h.lookup {
+		new[ix] = val
+	}
+	return boolHash{
+		lookup: new,
+		size:   h.size,
+	}
+}
+
+// Hash ...
+func (v BoolVector) Hash() Vector {
+	nhash := make(map[bool]int)
+
+	i := 1
+	for _, val := range v.data {
+		if _, ok := nhash[val]; !ok {
+			nhash[val] = i
+			i++
+		}
+	}
+
+	nhix := boolHash{nhash, i}
+
+	v.hash = nhix
+	return v
+}
+
+// GetHash ...
+func (v BoolVector) GetHash(l bool) int {
+	return v.hash.lookup[l]
+}
+
+// IsHashed ...
+func (v BoolVector) IsHashed() bool {
+	return len(v.hash.lookup) > 0
+}
+
+// GetHashVals ...
+func (v BoolVector) GetHashVals() ([]int, int) {
+	out := make([]int, v.Size())
+	for ix, val := range v.data {
+		out[ix] = v.hash.lookup[val]
+	}
+	return out, v.hash.size
+}
+
+// SetHash ...
+func (v BoolVector) SetHash(ri Vector) Vector {
+
+	r, ok := ri.(BoolVector)
+	if !ok {
+		return NewErrVec(fmt.Errorf("%w parameter ri, expected: `%T`, got: `%T`", utils.ErrParamType, v, ri), v.Type())
+	}
+
+	var new boolHash
+
+	new.lookup = make(map[bool]int, len(r.hash.lookup))
+	for ix, val := range r.hash.lookup {
+		new.lookup[ix] = val
+	}
+	new.size = r.hash.size
+
+	v.hash = new
+	return v
+}

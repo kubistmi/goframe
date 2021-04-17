@@ -41,7 +41,7 @@ type IntVector struct {
 	err   error
 }
 
-// NewIntVector creates an IntVector and populates it with a copy of used values
+// NewIntVec creates an IntVector and populates it with a copy of used values
 func NewIntVec(d []int, n NA) IntVector {
 	new := make([]int, len(d))
 	copy(new, d)
@@ -53,7 +53,7 @@ func NewIntVec(d []int, n NA) IntVector {
 	}
 }
 
-// unsageIntVector creates a new IntVector and pushes the parameters without copying
+// unsafeIntVector creates a new IntVector and pushes the parameters without copying
 func unsafeIntVec(d []int, na NA) IntVector {
 	return IntVector{
 		data: d,
@@ -102,6 +102,11 @@ func (v IntVector) Int() IntVector {
 	return v
 }
 
+// Bool attempts to type switch the Vector to BoolVector
+func (v IntVector) Bool() BoolVector {
+	return newErrBoolVec(fmt.Errorf("%w cant type switch, expected: `BoolVector`, got: `%T`", utils.ErrParamType, v))
+}
+
 // StrVector implementations ---------------------------------------------------
 
 // StrVector is an data structure build on top of []string
@@ -117,7 +122,7 @@ type StrVector struct {
 	err     error
 }
 
-// NewStrVector creates an StrVector and populates it with a copy of used values
+// NewStrVec creates an StrVector and populates it with a copy of used values
 func NewStrVec(d []string, n NA) StrVector {
 	new := make([]string, len(d))
 	copy(new, d)
@@ -129,7 +134,7 @@ func NewStrVec(d []string, n NA) StrVector {
 	}
 }
 
-// unsageStrVector creates a new StrVector and pushes the parameters without copying
+// unsafeStrVector creates a new StrVector and pushes the parameters without copying
 func unsafeStrVec(d []string, na NA) StrVector {
 	return StrVector{
 		data: d,
@@ -161,4 +166,87 @@ func (v StrVector) Str() StrVector {
 // Int attempts to type switch the Vector to IntVector
 func (v StrVector) Int() IntVector {
 	return newErrIntVec(fmt.Errorf("%w cant type switch, expected: `IntVector`, got: `%T`", utils.ErrParamType, v))
+}
+
+func (v StrVector) Bool() BoolVector {
+	return newErrBoolVec(fmt.Errorf("%w cant type switch, expected: `BoolVector`, got: `%T`", utils.ErrParamType, v))
+}
+
+// BoolVector implementations ---------------------------------------------------
+
+// BoolVector is an data structure build on top of []bool
+type BoolVector struct {
+	data []bool
+	na   NA
+	hash struct {
+		lookup map[bool]int
+		size   int
+	}
+	index map[bool][]int
+	err   error
+}
+
+// NewBoolVec creates an BoolVector and populates it with a copy of used values
+func NewBoolVec(d []bool, n NA) BoolVector {
+	new := make([]bool, len(d))
+	copy(new, d)
+	newna := n.CopyNA()
+
+	return BoolVector{
+		data: new,
+		na:   newna,
+	}
+}
+
+// unsafeBoolVector creates a new BoolVector and pushes the parameters without copying
+func unsafeBoolVec(d []bool, na NA) BoolVector {
+	return BoolVector{
+		data: d,
+		na:   na,
+		err:  nil,
+	}
+}
+
+// Size returns the length of the underlying slice ~ len([]T)
+func (v BoolVector) Size() int {
+	return len(v.data)
+}
+
+// Type returns the Datatype of the Vector
+func (v BoolVector) Type() Datatype {
+	return BoolType
+}
+
+// ToStr changes the type of the Vector to StrVector
+func (v BoolVector) ToStr() StrVector {
+
+	if v.Err() != nil {
+		return newErrStrVec(fmt.Errorf("ToStr - %w %w", utils.ErrAlreadyErr, v.Err()))
+	}
+
+	data := make([]string, v.Size())
+
+	for ix, val := range v.data {
+		if v.na.Get(ix) {
+			data[ix] = ""
+		} else {
+			data[ix] = strconv.FormatBool(val)
+		}
+	}
+
+	return NewStrVec(data, v.na.CopyNA())
+}
+
+// Str attempts to type switch the Vector to StrVector
+func (v BoolVector) Str() StrVector {
+	return newErrStrVec(fmt.Errorf("%w cant type switch, expected: `StrVector`, got: `%T`", utils.ErrParamType, v))
+}
+
+// Int attempts to type switch the Vector to IntVector
+func (v BoolVector) Int() IntVector {
+	return newErrIntVec(fmt.Errorf("%w cant type switch, expected: `IntVector`, got: `%T`", utils.ErrParamType, v))
+}
+
+func (v BoolVector) Bool() BoolVector {
+	return v
 }

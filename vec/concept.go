@@ -18,6 +18,14 @@ func (v IntVector) ElemI(i int) (interface{}, bool) {
 	return v.data[i], v.na.Get(i)
 }
 
+func (v BoolVector) ElemI(i int) (interface{}, bool) {
+	if i >= v.Size() {
+		var e interface{}
+		return e, true
+	}
+	return v.data[i], v.na.Get(i)
+}
+
 func (v StrVector) Elem(i int) (string, bool) {
 	if i >= v.Size() {
 		var e string
@@ -29,6 +37,14 @@ func (v StrVector) Elem(i int) (string, bool) {
 func (v IntVector) Elem(i int) (int, bool) {
 	if i >= v.Size() {
 		var e int
+		return e, true
+	}
+	return v.data[i], v.na.Get(i)
+}
+
+func (v BoolVector) Elem(i int) (bool, bool) {
+	if i >= v.Size() {
+		var e bool
 		return e, true
 	}
 	return v.data[i], v.na.Get(i)

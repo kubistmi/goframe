@@ -49,3 +49,25 @@ func (v StrVector) Mutate(f interface{}) Vector {
 	}
 	return NewStrVec(new, newna)
 }
+
+// BoolVector implementations ---------------------------------------------------
+
+// Mutate ...
+func (v BoolVector) Mutate(f interface{}) Vector {
+	fun, ok := f.(func(bool, bool) (bool, bool))
+	if !ok {
+		if err, ok := f.(error); ok {
+			return NewErrVec(fmt.Errorf("interface `f` contains error: %w", err), v.Type())
+		}
+		return NewErrVec(fmt.Errorf("%w parameter f, expected: `func(string) string`, got `%T`", utils.ErrParamType, f), v.Type())
+	}
+
+	new := make([]bool, v.Size())
+	newna := make(Set, v.na.Size())
+	var na bool
+	for ix, val := range v.data {
+		new[ix], na = fun(val, v.na.Get(ix))
+		newna.Setif(na, ix)
+	}
+	return NewBoolVec(new, newna)
+}

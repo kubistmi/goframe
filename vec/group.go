@@ -44,3 +44,23 @@ func (v StrVector) Group() Vector {
 	v.index = groups
 	return v
 }
+
+// BoolVector implementations ---------------------------------------------------
+
+// Group ...
+func (v BoolVector) Group() Vector {
+	groups := make(map[bool][]int)
+
+	for ix, val := range v.data {
+		slc := groups[val]
+		if len(slc) == cap(slc) {
+			news := make([]int, len(slc), cap(slc)+100)
+			copy(news, slc)
+			slc = news
+		}
+		groups[val] = append(slc, ix)
+	}
+
+	v.index = groups
+	return v
+}

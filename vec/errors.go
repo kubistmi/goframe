@@ -19,6 +19,12 @@ func NewErrVec(err error, kind Datatype) Vector {
 			na:   NewSet(-1),
 			err:  err,
 		}
+	case BoolType:
+		return BoolVector{
+			data: []bool{},
+			na:   NewSet(-1),
+			err:  err,
+		}
 	}
 	return NewErrVec(fmt.Errorf("not implemented"), StrType)
 }
@@ -50,6 +56,22 @@ func (v StrVector) Err() error {
 func newErrStrVec(err error) StrVector {
 	return StrVector{
 		data: []string{},
+		na:   NewSet(-1),
+		err:  err,
+	}
+}
+
+// StrVector implementations ---------------------------------------------------
+
+// Err returns the error from previous operations
+func (v BoolVector) Err() error {
+	return v.err
+}
+
+// newErrVector prepares a new StrVector with just the error
+func newErrBoolVec(err error) BoolVector {
+	return BoolVector{
+		data: []bool{},
 		na:   NewSet(-1),
 		err:  err,
 	}
