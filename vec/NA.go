@@ -11,12 +11,15 @@ type NA interface {
 	CopyNA() NA
 }
 
-func NewNA() NA {
-	return NewSet()
+func NewNA(size int) NA {
+	return NewSet(size)
 }
 
-func NewSet() Set {
-	return make(Set)
+func NewSet(size int) Set {
+	if size < 0 {
+		return make(Set)
+	}
+	return make(Set, size)
 }
 
 // Set is an alias for map[int]struct{}, it is used to represent the NA values,

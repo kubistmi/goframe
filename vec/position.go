@@ -11,7 +11,7 @@ import (
 // Loc prepares a new Data with the selected positions
 func (v IntVector) Loc(p []int) Vector {
 	new := make([]int, len(p))
-	na := NewNA()
+	na := NewNA(-1)
 	for ix, val := range p {
 		if val >= v.Size() || val < 0 {
 			return NewErrVec(fmt.Errorf("%w wrong position `p`, maximum allowed: %v, got %v", utils.ErrParamVal, v.Size()-1, val), v.Type())

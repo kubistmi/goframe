@@ -10,13 +10,13 @@ func NewErrVec(err error, kind Datatype) Vector {
 	case IntType:
 		return IntVector{
 			data: []int{},
-			na:   NewSet(),
+			na:   NewSet(-1),
 			err:  err,
 		}
 	case StrType:
 		return StrVector{
 			data: []string{},
-			na:   NewSet(),
+			na:   NewSet(-1),
 			err:  err,
 		}
 	}
@@ -34,7 +34,7 @@ func (v IntVector) Err() error {
 func newErrIntVec(err error) IntVector {
 	return IntVector{
 		data: []int{},
-		na:   NewSet(),
+		na:   NewSet(-1),
 		err:  err,
 	}
 }
@@ -50,7 +50,7 @@ func (v StrVector) Err() error {
 func newErrStrVec(err error) StrVector {
 	return StrVector{
 		data: []string{},
-		na:   NewSet(),
+		na:   NewSet(-1),
 		err:  err,
 	}
 }

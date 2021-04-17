@@ -222,7 +222,7 @@ func TestStrVector_Filter(t *testing.T) {
 		testStrVec{"between", uniq, utils.SkipNA(func(v string) bool { return v > "a" && v < "bb" }), smaller},
 		testStrVec{"larger", uniq, utils.SkipNA(func(v string) bool { return v > "p" }), last},
 		testStrVec{"equals", bins, utils.SkipNA(func(v string) bool { return v == "1" }), binsW},
-		testStrVec{"isin", uneven, utils.SkipNA(Isin([]string{"a", "b", "z"})), isin},
+		testStrVec{"isin", uneven, utils.SkipNA(utils.Isin([]string{"a", "b", "z"})), isin},
 		testStrVec{"error", bins, utils.SkipNA(func(a int) string { return "nope" }), errW},
 	}
 	for _, tt := range tests {

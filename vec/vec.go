@@ -30,11 +30,18 @@ type Vector interface {
 	Order() []int
 	Mutate(interface{}) Vector
 	Group() Vector
+
+	//! concepts
+	ElemI(i int) (interface{}, bool)
 	// Is(val interface{}) func() (bool, error)
 }
 
 // NewVec ...
 func NewVec(data interface{}, na NA) Vector {
+
+	if na == nil {
+		na = NewNA(-1)
+	}
 
 	switch t := data.(type) {
 	case []int:

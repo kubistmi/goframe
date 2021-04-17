@@ -7,7 +7,7 @@ import (
 )
 
 func TestOrder(t *testing.T) {
-	vec := NewVec([]int{1, 6, 22, 4, 9, 7, 8, 9}, NewNA())
+	vec := NewVec([]int{1, 6, 22, 4, 9, 7, 8, 9}, NewNA(-1))
 	ix := vec.(IntVector).Order()
 	fmt.Println(vec)
 	fmt.Println(ix)

@@ -77,3 +77,7 @@ func (df Table) checkCols(col []string) error {
 	}
 	return nil
 }
+
+func (df Table) Size() [2]int {
+	return df.size
+}
