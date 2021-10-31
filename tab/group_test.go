@@ -27,8 +27,8 @@ func TestGroup(t *testing.T) {
 		"group": vec.NewVec([]int{1, 0, 2, 2, 0, 2, 1, 1}, nil),
 	})
 	grDf := df.Group([]string{"sex", "group"})
-	got := grDf.GetGroups()
-	want := map[int][]int{4: []int{0, 6, 7}, 7: []int{4}, 8: []int{1}, 11: []int{2, 3, 5}}
+	got := grDf.GroupGet()
+	want := map[int][]int{4: {0, 6, 7}, 7: {4}, 8: {1}, 11: {2, 3, 5}}
 
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("Expected: %#v, got: %#v", want, got)

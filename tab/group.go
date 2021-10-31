@@ -3,8 +3,12 @@ package tab
 import "github.com/kubistmi/goframe/vec"
 
 // GetIndex ...
-func (df Table) GetGroups() map[int][]int {
+func (df Table) GroupGet() map[int][]int {
 	return df.index.grp
+}
+
+func (df Table) GroupCols() []string {
+	return df.index.cols
 }
 
 // Group ... TESTING GROUP BY
