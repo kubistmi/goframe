@@ -1,6 +1,50 @@
 package vec
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/kubistmi/goframe/utils"
+)
+
+type Elem struct {
+	val interface{}
+	na  bool
+	err error
+}
+
+func (e Elem) IsNa() bool {
+	return e.na
+}
+
+func (e Elem) Err() error {
+	return e.err
+}
+
+func (e Elem) Val() interface{} {
+	return e.val
+}
+
+// Should this be using Vector.Elem()?
+func (v StrVector) GetElem(i int) Elem {
+	if i >= v.Size() || i < 0 {
+		return Elem{err: fmt.Errorf("%w position i is higher than size of Vector, expected: %v, got: %v", utils.ErrParamVal, v.Size(), i)}
+	}
+	return Elem{v.data[i], v.na.Get(i), nil}
+}
+
+func (v IntVector) GetElem(i int) Elem {
+	if i >= v.Size() || i < 0 {
+		return Elem{err: fmt.Errorf("%w position i is higher than size of Vector, expected: %v, got: %v", utils.ErrParamVal, v.Size(), i)}
+	}
+	return Elem{v.data[i], v.na.Get(i), nil}
+}
+
+func (v BoolVector) GetElem(i int) Elem {
+	if i >= v.Size() || i < 0 {
+		return Elem{err: fmt.Errorf("%w position i is higher than size of Vector, expected: %v, got: %v", utils.ErrParamVal, v.Size(), i)}
+	}
+	return Elem{v.data[i], v.na.Get(i), nil}
+}
 
 func (v StrVector) ElemI(i int) (interface{}, bool) {
 	if i >= v.Size() {
