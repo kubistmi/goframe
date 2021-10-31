@@ -1,29 +1,35 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
+	"github.com/kubistmi/goframe/tab"
 	"github.com/kubistmi/goframe/vec"
 )
 
 func main() {
 
-	vecI := vec.NewVec([]int{0, 2, 2, 5, 4, 5})
+	vecI := vec.NewVec([]int{0, 2, 2, 5, 4, 5}, vec.NewNA(0))
 	if vecI.Err() != nil {
 		log.Fatal(vecI.Err())
 	}
-	// vecS := vec.NewVec([]string{"a", "c", "b", "z", "b", "a"})
-	// if vecS.Err() != nil {
-	// 	log.Fatal(vecS.Err())
-	// }
-	// df, err := tab.NewDf(map[string]vec.Vector{"ints": vecI, "strs": vecS})
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	vecS := vec.NewVec([]string{"a", "c", "b", "z", "b", "a"}, vec.NewNA(0))
+	if vecS.Err() != nil {
+		log.Fatal(vecS.Err())
+	}
+	df, err := tab.NewDf(map[string]vec.Vector{"ints": vecI, "strs": vecS})
+	if err != nil {
+		log.Fatal(err)
+	}
+	df = df.Assign("vals", vec.NewIntVec([]int{1, 2, 3, 4, 5, 6}, vec.NewNA(0)))
+
+	//fmt.Println(df)
+	//fmt.Println(df.Spread([]string{"strs"}, "ints", "vals"))
+	df.PrintTable()
+
 	// fmt.Println(df.Sort([]string{"ints", "strs"}))
 
-	fmt.Println(vecI.Hash().GetHashVals())
+	// fmt.Println(vecI.Hash().GetHashVals())
 
 	// ixed := df.Group([]string{"strs"})
 	// fmt.Println(ixed)
@@ -86,18 +92,24 @@ func main() {
 	// })
 
 	// fmt.Println(df.Group([]string{"sex", "group"}).GetIndex())
-	// N := 1000
+
+	// N := 10000000
 	// vals := make([]int, N)
 	// for i := 0; i < N; i++ {
 	// 	vals[i] = i
 	// }
-	// df, _ := NewDf(map[string]Vector{"ints": NewVec(vals)})
+	// df, _ := tab.NewDf(map[string]vec.Vector{"ints": vec.NewVec(vals, nil)})
 
 	// before := time.Now()
-	// df.Mutate(mut{"ints2", "ints", func(a int) int {
-	// 	return a * a
-	// }})
-	// fmt.Printf("Mutate:  %v\n", time.Now().Sub(before).Milliseconds())
+	// df.Mutate(tab.MapF("ints2", func(a int, c bool) (int, bool) { return a * a, true }, "ints"))
+	// fmt.Printf("Mutate:  %v\n", time.Since(before).Milliseconds())
+
+	// before = time.Now()
+	// df.MutateMap(tab.MapF("ints2", func(a map[string]interface{}) int {
+	// 	c := a["ints"].(int)
+	// 	return c * c
+	// }, "ints"))
+	// fmt.Printf("MutateMap:  %v\n", time.Since(before).Milliseconds())
 
 	// before = time.Now()
 	// df.Mutate2(mut2{"ints2", []string{"ints"}, func(args ...interface{}) interface{} {
