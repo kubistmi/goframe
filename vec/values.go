@@ -76,6 +76,18 @@ func (v StrVector) Copy() Vector {
 	}
 }
 
+func (v StrVector) Unique() []string {
+	if v.index == nil {
+		v = v.Group().Str()
+	}
+
+	out := make([]string, 0, len(v.index))
+	for ix := range v.index {
+		out = append(out, ix)
+	}
+	return out
+}
+
 // BoolVector implementations ---------------------------------------------------
 
 // Get returns a copy of the underlying data
