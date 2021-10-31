@@ -2,10 +2,12 @@ package tab
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"unicode/utf8"
 
 	"github.com/kubistmi/goframe/vec"
+	"github.com/olekukonko/tablewriter"
 )
 
 func nchar(s string) int {
@@ -57,7 +59,7 @@ func pad(s string, n int) string {
 }
 
 // Print ...
-func (df Table) Print() string {
+func (df Table) PrintOwn() string {
 	n := lim(false, 10, df.size[0])
 	colmax := 60
 	dfV := df.Head(n)
@@ -115,5 +117,39 @@ func (df Table) Print() string {
 }
 
 func (df Table) String() string {
-	return df.Print()
+	return df.PrintOwn()
+}
+
+// based on https://github.com/olekukonko/tablewriter
+// TODO: how to make it comply with Stringer()?
+func (df Table) Print() {
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader(df.names)
+
+	df = df.Rows([]int{0, 1, 2, 3, 4})
+	textmat := make([][]string, df.size[0])
+	for ix := range textmat {
+		textmat[ix] = make([]string, df.size[1])
+	}
+
+	for i, col := range df.names {
+		vals, NA, err := df.Pull(col).ToStr().Get()
+		if err != nil {
+			panic("wtf!")
+		}
+		for j, v := range vals {
+			if NA.Get(j) {
+				textmat[j][i] = "NA"
+			} else {
+				textmat[j][i] = v
+			}
+		}
+	}
+
+	for _, val := range textmat {
+		table.Append(val)
+	}
+	table.Render()
+
 }
