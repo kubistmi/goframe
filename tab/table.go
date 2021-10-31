@@ -66,6 +66,7 @@ func (df Table) Assign(name string, v vec.Vector) Table {
 	}
 	df.data[name] = v
 	df.names = append(df.names, name)
+	df.size[1]++
 	return df
 }
 
