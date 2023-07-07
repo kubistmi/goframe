@@ -1,0 +1,2 @@
+go test -cpuprofile cpu.prof -memprofile mem.prof -bench .
+pprof -http=localhost:5000 .\mem.prof
